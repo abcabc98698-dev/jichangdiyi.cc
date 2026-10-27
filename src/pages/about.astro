@@ -1,113 +1,650 @@
 ---
-import CtaBand from '../components/CtaBand.astro';
-import PageHero from '../components/PageHero.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { team, values } from '../data/team';
+import { site } from '../data/site';
+import { brands } from '../data/brands';
+
+// 页面基础 SEO 元数据
+const pageTitle = "关于我们与独立评测方法论准则 · 第一机场实验室 (jichangdiyi.cc)";
+const pageDescription = "全面公开第一机场实验室（jichangdiyi.cc）的独立第三方定位、广东双千兆探针实测网络环境、五维全景评分体系、晚高峰丢包与 Jitter 采样算法、Affiliate 赞助外链透明度公约及 42 家机场品牌准入淘汰制度。";
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/about';
+const canonical = new URL(pathname, Astro.site);
+
+// 统计核心数据指标
+const totalBrands = brands.length;
+const ieplCount = brands.filter(
+  (b) => b.lineType === 'IEPL专线' || b.lineType === 'IPLC专线',
+).length;
+
+// 页面结构化数据 (JSON-LD)
+const aboutSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: canonical.toString(),
+  mainEntity: {
+    '@type': 'Organization',
+    name: site.name,
+    url: site.url,
+    description: site.description,
+    publishingPrinciples: `${site.url}/about#principles`,
+    knowsAbout: [
+      'IEPL 专线',
+      'IPLC 专线',
+      '跨境网络测速',
+      'Mihomo 内核调优',
+      'Clash Verge Rev 配置',
+      '原生住宅 IP 纯净度检测',
+      'Cloudflare Turnstile 绕过'
+    ],
+  },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: '首页',
+      item: site.url,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: '关于我们及评测方法论',
+      item: canonical.toString(),
+    },
+  ],
+};
+
+// 页面内部目录导航 (TOC)
+const tocSections = [
+  { id: 'summary', title: '核心快速摘要 (Executive Summary)', depth: 2 },
+  { id: 'mission', title: '一、 实验室使命与行业乱象溯源', depth: 2 },
+  { id: 'industry-dark', title: '1.1 跑路盘与超售资金盘的商业原罪', depth: 3 },
+  { id: 'soft-blogs', title: '1.2 软文推荐博客的潜规则与利益捆绑', depth: 3 },
+  { id: 'third-party', title: '1.3 第一机场的设立：建立客观物理基准', depth: 3 },
+  { id: 'scoring-system', title: '二、 五维全景评分体系与权重分配', depth: 2 },
+  { id: 'weights-table', title: '2.1 实验室五维评价标准与扣分细则表', depth: 3 },
+  { id: 'brand-tiers', title: '2.2 42 家机场品牌分级与准入名单定义', depth: 3 },
+  { id: 'infrastructure', title: '三、 实验室物理基础设施与实测环境', depth: 2 },
+  { id: 'hardware-table', title: '3.1 物理探针环境 vs 自媒体软文对比表', depth: 3 },
+  { id: 'peak-hours', title: '3.2 为什么只盯死晚高峰 20:30–23:00？', depth: 3 },
+  { id: 'packet-loss-algo', title: '3.3 丢包率、Jitter 与欺诈分采样算法', depth: 3 },
+  { id: 'governance', title: '四、 准入、动态复测与淘汰机制', depth: 2 },
+  { id: 'entry-criteria', title: '4.1 品牌收录的 6 项硬性基线审查', depth: 3 },
+  { id: 'redlines', title: '4.2 移入黑名单的八大绝罚红线', depth: 3 },
+  { id: 'self-test', title: '五、 用户端自测实操指南 (三步复现)', depth: 2 },
+  { id: 'mtr-command', title: '5.1 晚高峰 MTR / Traceroute 跃点抓包命令', depth: 3 },
+  { id: 'ip-fraud-check', title: '5.2 节点落地 IP 欺诈分与 ASN 自检', depth: 3 },
+  { id: 'affiliate-policy', title: '六、 商业模式与赞助外链透明度声明', depth: 2 },
+  { id: 'affiliate-source', title: '6.1 成本构成与 Affiliate 资金流向', depth: 3 },
+  { id: 'seo-compliance', title: '6.2 遵循 Google 外链合规 (nofollow/sponsored)', depth: 3 },
+  { id: 'disclaimer', title: '七、 法律合规与用户使用免责须知', depth: 2 },
+  { id: 'faq', title: '八、 常见核心问题深度解答 (FAQ)', depth: 2 },
+  { id: 'feedback', title: '九、 异常上报、厂商复核与社区通道', depth: 2 },
+];
 ---
 
 <BaseLayout
-  title="About"
-  description="Meet the team behind the gym and the principles that guide how we coach."
+  title={pageTitle}
+  description={pageDescription}
+  schema={[aboutSchema, breadcrumbSchema]}
 >
-  <PageHero
-    eyebrow="About us"
-    title="Coaching over noise."
-    subtitle="We started in 2019 with one squat rack and a borrowed room. We have grown slowly, on purpose, and coaching quality still comes first."
-    compact
-  />
-
-  <section class="section aw-section">
+  <section class="section aw-section py-5">
     <div class="container">
-      <div class="columns is-vcentered">
-        <div class="column is-7">
-          <h2 class="title is-2 mb-4">Why we exist</h2>
-          <div class="content">
-            <p>
-              Most of us came to fitness after burning out on the version sold in
-              advertisements: perfect gym selfies, extreme challenges, and a lot of
-              quiet guilt when life got in the way.
-            </p>
-            <p>
-              We wanted something more useful. A place where a thirty-minute session
-              counts, where a week of missed training is information rather than
-              failure, and where the programme is built around your actual schedule.
-            </p>
-            <p>
-              Today we run group classes, one-to-one coaching, and recovery work.
-              Everything is designed to fit into an ordinary week — and to survive it.
-            </p>
+      <!-- 顶部面包屑导航 -->
+      <nav class="breadcrumb is-small mb-4" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li><a href="/about">关于我们</a></li>
+          <li class="is-active"><span aria-current="page">实验室方法论准则</span></li>
+        </ul>
+      </nav>
+
+      <!-- 头部元信息徽章 -->
+      <div class="aw-blog-meta">
+        <span class="aw-meta-badge">🔬 第一机场网络评测实验室 (Observatory)</span>
+        <span class="aw-meta-badge">📅 规范版本：2026 年最新修订版</span>
+        <span class="aw-meta-badge">📊 已收录品牌：{totalBrands} 家 ({ieplCount} 家全专线架构)</span>
+        <span class="aw-meta-badge">⚖️ 独立中立声明 · 遵循 Section 38 规范</span>
+      </div>
+
+      <!-- 页面主标题 -->
+      <h1 class="aw-blog-title">关于我们与独立评测方法论：打破网络代理行业乱象的基准宣言</h1>
+
+      <!-- 标签展示 -->
+      <div class="mb-5">
+        <span class="aw-tag">#评测方法论</span>
+        <span class="aw-tag">#独立调查</span>
+        <span class="aw-tag">#晚高峰丢包实测</span>
+        <span class="aw-tag">#五维评分体系</span>
+        <span class="aw-tag">#外链合规声明</span>
+        <span class="aw-tag">#真假专线鉴别</span>
+      </div>
+
+      <hr class="my-4" style="background-color: var(--aw-border); height: 1px; border: none;" />
+
+      <!-- 主双栏布局：左侧详尽正文 + 右侧粘性目录与关键导流卡片 -->
+      <div class="aw-blog-layout">
+        <div class="aw-blog-main">
+          <article class="aw-prose">
+
+            <!-- 核心快速摘要块 (GEO Answer Block) -->
+            <section id="summary" class="mb-6">
+              <h2 class="is-sr-only">核心快速摘要</h2>
+              <blockquote>
+                <h3>📌 核心快速答案块 (GEO Answer Block)：第一机场是什么机构？</h3>
+                <p>
+                  <strong>第一机场实验室（jichangdiyi.cc）</strong>是由资深网络架构师、网络安全从业者与开源代理协议贡献者共同维护的<strong>独立第三方网络加速基准评测机构</strong>。本站不研发销售任何代理客户端、不搭建运营任何收费代理节点、不受任何机场服务商的资本控股或商业干涉。
+                </p>
+                <p>
+                  我们设立的唯一宗旨是：<strong>通过自建的高性能物理宽带探针网络，持续在晚高峰（20:30–23:00）骨干网拥塞期针对主流 42+ 家机场品牌进行全报文抓包测试</strong>。通过公开发布真实丢包率、延迟抖动（Jitter）、海外落地 IP 欺诈度（Fraud Score）及线路物理架构拓扑，彻底打破中文网络代理行业长期存在的“虚标带宽、以公网冒充专线、软文博主通篇夸赞、超售跑路不断”的黑盒乱象。
+                </p>
+              </blockquote>
+            </section>
+
+            <!-- 第一部分：实验室使命与行业乱象溯源 -->
+            <section id="mission">
+              <h2>一、 实验室使命与行业乱象溯源：为什么中文互联网亟需一座“网络代理天文台”？</h2>
+              <p>
+                对于跨境电商运营人员、软件研发工程师、科研学者、海外高校留学生以及高频使用生成式 AI（如 ChatGPT、Claude、Midjourney）的创作者而言，一条高速、稳定且抗封锁的国际互联网连接，早已成为日常生产力中不可或缺的底层基础设施。
+              </p>
+              <p>
+                然而，由于该领域的特殊性与非公开性，跨境网络服务长期处于一个<strong>信息极度不对称、缺乏统一行业标准与技术透明度的灰色地带</strong>。广大普通用户在挑选服务时，往往只能依赖搜索引擎前几页的博客推荐或社交群聊中的口口相传，从而极易落入不良商家与营销号精心布设的陷阱之中。
+              </p>
+
+              <h3 id="industry-dark">1.1 跑路盘与超售资金盘的商业原罪</h3>
+              <p>
+                在网络工程与电信采购领域，物理带宽是有其硬性成本底线的。正规合法跨境 IEPL/IPLC 物理专线的采购单价通常不低于 <strong>15 至 25 美元/Mbps/月</strong>（折合人民币每 100Mbps 端口月租在万元以上）。然而，市场上频繁出现标价“9.9 元/年 1000G”甚至“19.9 元永久不限流量”的所谓“神仙专线”。
+              </p>
+              <p>
+                从数学模型推导，这类商家只有两种生存路径：
+              </p>
+              <ul>
+                <li><strong>路径 A：极端超售 50 至 100 倍</strong>。将原本只能容纳 200 人的 1Gbps 入口塞入 20,000 名用户。白天空载时测速数字亮眼，但一到晚间 20:30 黄金高峰期，内部交换机缓冲区直接溢出，丢包率瞬间飙升至 30% 以上，用户甚至无法正常加载一张 Google 搜索结果页。</li>
+                <li><strong>路径 B：资金盘短期卷款（俗称“跑路盘”）</strong>。运营者依靠极低年付定价在各类论坛贴吧疯狂拉新吸纳预付费。当新增用户资金无法覆盖当月服务器续费账单时，运营者便立即清空 Telegram 频道、注销域名并携款跑路，随后换个马甲重新上线。据第一机场实验室行业追踪数据统计，仅 2025 年间，生命周期不足 6 个月的短期跑路机场品牌便超过 300 家。</li>
+              </ul>
+
+              <h3 id="soft-blogs">1.2 软文推荐博客的潜规则与利益捆绑</h3>
+              <p>
+                更严重的问题在于评价体系的崩塌。中文互联网上绝大多数所谓的“机场评测导航站”，其运营模式本质上是<strong>“Affiliate 佣金收割机”</strong>。
+              </p>
+              <p>
+                为了赚取高达 30%–50% 的订单推广分成，这些博客对收录的任何品牌均冠以“全专线顶级体验、万兆秒开 4K/8K、解锁一切流媒体、永久稳定不失联”等无节制的夸大溢美之词。对于节点晚高峰严重丢包、频繁换域名、落地机房 IP 被万人共用导致 ChatGPT 1020 阻断、不支持退款等关键硬伤，这些导购网站由于担心影响转化率而绝口不提。用户在参考这些评测购买后，往往在遭遇断网卡顿和客服失联时求助无门。
+              </p>
+
+              <h3 id="third-party">1.3 第一机场的设立：建立客观物理基准</h3>
+              <p>
+                面对这种劣币驱逐良币的市场生态，我们决定联合多位资深网络工程师创建<strong>第一机场实验室（jichangdiyi.cc）</strong>。
+              </p>
+              <p>
+                我们的目标是成为中文互联网上最硬核、最透明的“网络代理天文台”：
+              </p>
+              <ul>
+                <li><strong>把数据写在明处</strong>：不看商家宣传口号，直接以实验室物理探针在晚高峰采集的 Ping、MTR 百包丢包率与带宽测速为唯一评判标准。</li>
+                <li><strong>把缺陷摆在台面</strong>：任何品牌若不支持退款、在晚高峰存在特定节点降速、海外落地 IP 欺诈度过高，均在品牌详情页中以醒目提示标出。</li>
+                <li><strong>设立不可逾越的评测防火墙</strong>：坚决杜绝“收钱删差评”、“充值提升排名”等潜规则，所有评级与扣分标准一视同仁。</li>
+              </ul>
+            </section>
+
+            <!-- 第二部分：五维全景评分体系与权重分配 -->
+            <section id="scoring-system">
+              <h2>二、 评测维度与权重分配：第一机场“五维全景评分体系”</h2>
+              <p>
+                为杜绝主观臆断与盲目推荐，第一机场实验室建立了标准化、可量化的<strong>五维全景评分模型（Five-Dimensional Evaluation Model, FDEM）</strong>。综合评分采用百分制，各维度权重与评判标准如下：
+              </p>
+
+              <h3 id="weights-table">2.1 实验室五维评价标准与扣分细则表</h3>
+              <div class="table-container my-4">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                  <thead>
+                    <tr>
+                      <th style="min-width: 140px;">评测维度</th>
+                      <th style="min-width: 80px;">权重占比</th>
+                      <th style="min-width: 220px;">核心实测指标与采集手段</th>
+                      <th style="min-width: 260px;">关键加分与重大扣分细则</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>1. 晚高峰稳定性</strong></td>
+                      <td><span class="tag is-primary is-light has-text-weight-bold">30%</span></td>
+                      <td>20:30–23:00 黄金拥塞期，以 100 次并发大包连续探测端到端平均丢包率与延迟抖动 (Jitter)。</td>
+                      <td>• 晚高峰丢包 &lt; 0.5% 且 Jitter &lt; 2ms：满分<br>• 丢包率达 3%–5%：扣 10 分<br>• 丢包率超过 10% 或频繁断流：该项清零</td>
+                    </tr>
+                    <tr>
+                      <td><strong>2. 线路物理架构</strong></td>
+                      <td><span class="tag is-info is-light has-text-weight-bold">25%</span></td>
+                      <td>Traceroute 跃点追踪、内网二层封装验证、重大网络敏感期连通性压力测试。</td>
+                      <td>• 运营商物理 IEPL/IPLC 二层专线：满分<br>• 国内多线 BGP 公网优质中转：得 15 分<br>• 廉价公网直连或虚标专线假冒：扣 20 分并通报</td>
+                    </tr>
+                    <tr>
+                      <td><strong>3. 落地纯净度与解锁</strong></td>
+                      <td><span class="tag is-success is-light has-text-weight-bold">20%</span></td>
+                      <td>MaxMind / IPinfo / Scamalytics 欺诈分探测；OpenAI、Claude、Netflix、Disney+ 真实 API 握手检测。</td>
+                      <td>• 原生广播/静态住宅 IP、Fraud Score &lt; 15：满分<br>• 万人骑机房黑名单 IP（引发 1020 阻断）：扣 12 分<br>• 流媒体非自制剧无法解锁：扣 8 分</td>
+                    </tr>
+                    <tr>
+                      <td><strong>4. 协议安全性与现代化</strong></td>
+                      <td><span class="tag is-warning is-light has-text-weight-bold">15%</span></td>
+                      <td>客户端抓包探测支持协议（Shadowsocks-2022、Trojan、VLESS、Hysteria2、TUIC）及防 DPI 嗅探特征。</td>
+                      <td>• 支持全系现代化低开销协议：满分<br>• 仍在使用已被广泛特征识别的老旧老旧协议：扣 10 分<br>• 节点支持 UDP FullCone NAT（外服游戏）：加 5 分</td>
+                    </tr>
+                    <tr>
+                      <td><strong>5. 商业信誉与服务</strong></td>
+                      <td><span class="tag is-link is-light has-text-weight-bold">10%</span></td>
+                      <td>工商/境外主体存续期、退款承诺兑现率、工单与客服响应时效、历史重大事故应急表现。</td>
+                      <td>• 稳定运营 3 年以上且支持无理由退款：满分<br>• 仅支持无保障虚拟币支付且禁止退款：扣 5 分<br>• 曾在未经通知情况下清空用户剩余时长：一票否决</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 id="brand-tiers">2.2 42 家机场品牌分级与准入名单定义</h3>
+              <p>
+                根据五维全景评分结果，第一机场实验室将全网收录的机场划分为以下四大梯队：
+              </p>
+              <ul>
+                <li><strong>S 级（顶级企业专线 · 综合分 ≥ 92）</strong>：采用运营商物理 IEPL/IPLC 专线互联，晚高峰 0% 丢包，海外出口匹配原生高纯净度住宅/广播 IP，完美承载外贸大促、跨国视讯及生产级 AI 大模型调用。代表品牌：<a href="/brands/guangsu">光速云</a>、<a href="/brands/firefly">Firefly</a>。</li>
+                <li><strong>A 级（高性价比稳定主力 · 综合分 80–91）</strong>：拥有高质量内网中转或优质专线配额，月均价格在 15–30 元良性商业区间，丢包控制在 1.5% 以内，能够满足程序员代码拉取、日常视频办公与 4K 流媒体播放需求。代表品牌：<a href="/brands/weifeng">微风网络</a>、<a href="/brands/yifan">一帆云</a>、<a href="/brands/feimao">肥猫云</a>。</li>
+                <li><strong>B 级（轻量入门备用 · 综合分 65–79）</strong>：采用混合线路架构，价格通常低于 10 元/月，晚高峰可能存在轻微抖动，适宜作为主力专线断线时的低成本冗余备用通道。代表品牌：<a href="/brands/wuyou">无忧链接</a>、部分入门套餐。</li>
+                <li><strong>C 级（高风险观察名单 · 综合分 &lt; 65）</strong>：出现过大面积断流、晚高峰丢包持续超 10%、严重虚标带宽倍率、客服长期失联但尚未关站的品牌。本站详情页予以加粗红字警示。</li>
+                <li><strong>D 级（跑路黑名单 · 移入档案库）</strong>：确认关站卷款、清空服务器或恶意清零用户套餐的劣质服务商。全站直接封禁跳转入口，保留证据存盘公示。</li>
+              </ul>
+            </section>
+
+            <!-- 第三部分：实验室物理基础设施与实测环境 -->
+            <section id="infrastructure">
+              <h2>三、 实验室物理基础设施与实测环境：数据是如何采集的？</h2>
+              <p>
+                “没有经过严格对照实验的测速报告没有任何技术参考价值。”很多数码自媒体仅凭借在自家普通宽带下随意打开网页测速一次，便宣称某机场“全国第一”。第一机场实验室坚决抵制这种业余且误导性的评测手法。
+              </p>
+
+              <h3 id="hardware-table">3.1 物理探针环境 vs 自媒体软文对比表</h3>
+              <div class="table-container my-4">
+                <table class="table is-fullwidth is-striped is-hoverable">
+                  <thead>
+                    <tr>
+                      <th style="min-width: 140px;">对照维度</th>
+                      <th style="min-width: 260px;">第一机场实验室标准化物理探针</th>
+                      <th style="min-width: 240px;">常见自媒体 / 导购博客“软文测速”</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>测试网络入口</strong></td>
+                      <td>广东珠海电信千兆 + 广东联通千兆物理双对等宽带，双线独立验证，消除单一省网拥塞误差。</td>
+                      <td>博主家中单一家用宽带，受局域网 WiFi 衰减、邻里竞争及家庭路由器性能严重干扰。</td>
+                    </tr>
+                    <tr>
+                      <td><strong>海外基准探针</strong></td>
+                      <td>香港 Equinix HK2、日本东京 Equinix TY8、新加坡 Global Switch 等核心互联机房的独立 BGP 探测节点。</td>
+                      <td>无基准海外服务器，直接使用第三方公共测速节点，节点自身带宽常成为测试瓶颈。</td>
+                    </tr>
+                    <tr>
+                      <td><strong>测速时间窗口</strong></td>
+                      <td><strong>严防晚高峰：聚焦每晚 20:30–23:00</strong> 骨干网流量最高峰期连续抓包。</td>
+                      <td>常在凌晨或工作日上午闲时测速，截取好看的高速图糊弄用户。</td>
+                    </tr>
+                    <tr>
+                      <td><strong>丢包检测采样</strong></td>
+                      <td>使用定制脚本发起连续 100 次、包尺寸为 1400 字节的 MTR 报文序列，统计最后跳丢包率与标准差。</td>
+                      <td>仅看客户端单次 TCP Ping 延迟数字，对传输中是否真实丢包完全无视。</td>
+                    </tr>
+                    <tr>
+                      <td><strong>IP 纯净度检测</strong></td>
+                      <td>自动调用 MaxMind GeoIP、IPinfo API 与 Scamalytics 欺诈分数据库，精准区分住宅与机房 IP。</td>
+                      <td>仅凭能不能打开 Google 判定，对 ChatGPT 封号风险与风控机制一无所知。</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 id="peak-hours">3.2 为什么只盯死晚高峰 20:30–23:00？</h3>
+              <p>
+                计算机网络传输遵循物理带宽守恒定律。白天（02:00–18:00），中国大陆国际出口局带宽充裕，绝大部分即使是直连的廉价公网节点，也能跑出 200Mbps 以上的速度，Ping 延迟也相对平稳。
+              </p>
+              <p>
+                然而，**每晚 20:30 至 23:00 是全国网民集中用网的“流量海啸期”**。三大运营商国际出口路由器的缓冲区被彻底塞满，QoS 机制开始无差别丢弃普通公网数据包。此时：
+              </p>
+              <ul>
+                <li><strong>伪专线与廉价中转</strong>：丢包率瞬间蹿升至 15%–35%，TCP 拥塞窗口减半，实际下载速度断崖式跌落至几百 Kbps，甚至完全打不开任何外网。</li>
+                <li><strong>真正合规的 IEPL/IPLC 专线</strong>：由于数据在物理层走运营商封闭的 OTN 内网光缆，完全绕开公共国际出口，丢包率始终压制在 <strong>0.2% 以下</strong>，延迟抖动方差小于 1.5ms。</li>
+              </ul>
+              <p>
+                因此，第一机场实验室所有入库的核心数据，<strong>90% 均采集于晚高峰极度拥塞期</strong>。只有经受住晚高峰淬炼的节点，才有资格获得本站的五星推荐。欲了解晚高峰公网丢包的底层路由器队列与物理光缆传输机理，请参考我们的深度科普：<a href="/blog/iepl-vs-iplc-architecture">《IEPL 专线 vs IPLC 专线全面科普：底层传输架构、晚高峰丢包机理与真假专线辨识全指南》</a>。
+              </p>
+
+              <h3 id="packet-loss-algo">3.3 丢包率、Jitter 与欺诈分采样算法</h3>
+              <p>
+                实验室在测试节点时，执行以下数学与工程计算：
+              </p>
+              <ul>
+                <li><strong>标准差 Jitter 计算</strong>：通过连续采集的 100 次 RTT 往返时延（t1, t2, ..., tn），计算其离散程度与波动方差：<br />
+                  <code>σ = √[ (1/N) * Σ(t_i - t_avg)² ]</code><br />
+                  真专线的 σ（即 Jitter 延迟抖动）在严格控制下通常在 0.5ms 至 1.8ms 之间；若 σ &gt; 15ms，说明节点走的是忽高忽低的公网拥塞路由。
+                </li>
+                <li><strong>欺诈分（Fraud Score）判定</strong>：针对海外出口 IP，抓取其在 Scamalytics 与 MaxMind 的风险指数（0–100 分）。小于 20 分为安全住宅/原生广播，大于 60 分则认定为高风控万人共用机房 IP，该项得分将被直接腰斩。关于住宅 IP 对 AI 工具的避坑细节，详见：<a href="/blog/chatgpt-claude-proxy-optimization">《解决 ChatGPT / Claude 访问受限：原生住宅 IP、风控机理与节点选型避坑全指南》</a>。
+                </li>
+              </ul>
+            </section>
+
+            <!-- 第四部分：准入、动态复测与淘汰机制 -->
+            <section id="governance">
+              <h2>四、 准入、动态复测与淘汰机制：42 家品牌是如何动态治理的？</h2>
+              <p>
+                机场服务是一项高动态的持续性业务。一家机场今天表现优异，并不代表其在半年后大规模超售时依然稳定。第一机场实验室绝不搞“一次评测终身有效”，而是建立了一整套严格的<strong>全周期动态治理与淘汰机制</strong>。
+              </p>
+
+              <h3 id="entry-criteria">4.1 品牌收录的 6 项硬性基线审查</h3>
+              <p>
+                任何申请收录或被实验室纳入监测范围的机场品牌，必须通过以下 6 道基线门槛：
+              </p>
+              <ol>
+                <li><strong>运营时长门槛</strong>：公开发售并持续稳定运行至少 180 天以上，排除新开盘圈钱跑路的高危新手商家。</li>
+                <li><strong>节点规模底线</strong>：至少部署有 3 个以上独立可用区（香港、日本、新加坡或美国），且总带宽冗余不低于 500Mbps。</li>
+                <li><strong>协议合规度</strong>：全面支持 Clash、Surge、Shadowrocket 等通用规范订阅，严禁绑定仅能在其强制定制修改版客户端中运行的加密混淆（防范客户端捆绑劫持）。若您正在配置通用客户端，建议参阅：<a href="/blog/2026-clash-verge-rev-guide">《2026 最新 Clash Verge Rev 客户端配置与 TUN 模式分流实操教程》</a>。</li>
+                <li><strong>支付渠道安全性</strong>：至少支持支付宝、微信或主流合规海外信用卡等第三方担保支付渠道，严禁仅支持匿名虚拟币充值的无信誉盘口。</li>
+                <li><strong>客服支持时效</strong>：工单平均首次响应时间需在 24 小时以内，具备活跃的技术公告 Telegram 频道或客户支持群。</li>
+                <li><strong>条款透明度</strong>：拥有明确的服务条款（TOS）与审计规则说明，严禁在用户不知情的情况下随意封禁账号。</li>
+              </ol>
+
+              <h3 id="redlines">4.2 移入黑名单的八大绝罚红线</h3>
+              <p>
+                在日常监测中，一旦发现品牌方触犯以下任一红线，第一机场实验室将<strong>直接将其评级降为 D 级，全站下架转化链接，并永久通报保留劣迹公示</strong>：
+              </p>
+              <ul>
+                <li>❌ <strong>红线 1：虚构专线欺诈</strong>。在节点名称或官网明确标注“纯 IPLC/IEPL 物理专线”，但实际抓包证实为廉价公网 VPS 隧道中转，以次充好欺骗用户支付高溢价。</li>
+                <li>❌ <strong>红线 2：恶意超额超售</strong>。晚高峰骨干网测速连续 7 天丢包率超过 20%，且服务商拒绝扩容入口带宽，放任服务瘫痪。</li>
+                <li>❌ <strong>红线 3：私自篡改审计规则并吞没余额</strong>。在未发布公告的情况下突然将主流合法学术或开源网站加入屏蔽审计，并在用户质疑时直接封号不退款。</li>
+                <li>❌ <strong>红线 4：伪造测速面板（Fake Ping）</strong>。在客户端订阅配置中修改响应头，欺骗客户端延迟探测器返回虚假的极低数值。</li>
+                <li>❌ <strong>红线 5：卷款跑路</strong>。官网无法访问超过 72 小时、节点全线飘红失联、官方社群解散或开启全员禁言。</li>
+                <li>❌ <strong>红线 6：恶意商业攻击</strong>。组织黑客水军针对同行或其他评测网站发起 DDoS 敲诈勒索攻击。</li>
+                <li>❌ <strong>红线 7：泄露用户个人隐私</strong>。因安全配置漏洞导致用户注册邮箱、密码明文或充值订单数据被外泄至公开暗网。</li>
+                <li>❌ <strong>红线 8：虚假承诺退款</strong>。官网宣传“7天无理由退款”，但在用户符合条件申请时无理拒绝、故意拖延或扣除高额离谱手续费。</li>
+              </ul>
+            </section>
+
+            <!-- 第五部分：用户端自测实操指南 -->
+            <section id="self-test">
+              <h2>五、 用户端自测实操指南：手把手教您复现实验室的 3 项核心检测</h2>
+              <p>
+                “授人以鱼不如授人以渔”。第一机场实验室坚信：<strong>最优秀的评测是用户自己可以在本地环境随时复现验证的评测</strong>。无需昂贵的专业设备，只需打开您的电脑终端，即可通过以下三步排查手头节点的真实水准：
+              </p>
+
+              <h3 id="mtr-command">5.1 晚高峰 MTR / Traceroute 跃点抓包命令</h3>
+              <p>
+                请在晚间 21:00 至 22:30 的拥塞高峰期，断开其他后台下载软件，打开终端执行以下诊断：
+              </p>
+              <pre><code># Linux / macOS 系统 (需预先安装 mtr: brew install mtr 或 apt install mtr)
+# 参数解析：-r 报表模式；-w 宽字符；-c 100 发送100个连续探测报文；-s 1400 模拟真实数据包大小
+mtr -rwc 100 -s 1400 &lt;节点服务器的入口IP地址&gt;</code></pre>
+
+              <p>在 Windows 环境下，可在 PowerShell 执行连续 Ping 测试丢包与抖动：</p>
+              <pre><code># Windows PowerShell 大包长探测命令
+ping -n 100 -l 1400 &lt;节点服务器入口IP地址&gt;
+
+# 检查路由跃点数 (专线通常在 3-5 跳内直接进入海外机房)
+tracert -d &lt;节点服务器入口IP地址&gt;</code></pre>
+
+              <p><strong>判定标准速查</strong>：</p>
+              <ul>
+                <li><strong>真专线表现</strong>：100 个数据包中，丢失数应为 0（丢包率 0% 或 &lt; 0.5%），最长与最短延迟差值小于 3ms，路由跳数极短，不经过 <code>202.97.*.*</code> 公网国际出口。</li>
+                <li><strong>伪专线表现</strong>：丢失 5 到 20 个数据包（丢包率 5%–20%），延迟在 80ms 到 280ms 之间大幅跳动，路由经过漫长公网出口跃点。</li>
+              </ul>
+
+              <h3 id="ip-fraud-check">5.2 节点落地 IP 欺诈分与 ASN 自检</h3>
+              <p>
+                连接节点后，在终端中运行以下 cURL 指令，即可直接查询目标网站看到您的出口信息：
+              </p>
+              <pre><code># 查询当前代理出口 IP、所属自治系统 (ASN) 与组织机构
+curl -s https://ipinfo.io/json | grep -E "ip|city|region|country|org"</code></pre>
+              <p>
+                随后打开浏览器访问国际公认的反欺诈数据库：<code>https://scamalytics.com/ip/&lt;您的出口IP&gt;</code>。
+                如果页面显示的 **Fraud Score 高于 50 分**，且类型标记为 **Data Center / Hosting**，说明该节点已被 Cloudflare 及 OpenAI 列入高危风控名单，日常使用极易频繁弹出 Turnstile 验证码甚至被直接封号。
+              </p>
+            </section>
+
+            <!-- 第六部分：商业模式与赞助外链透明度声明 -->
+            <section id="affiliate-policy">
+              <h2>六、 商业模式与赞助外链合规公开声明 (Affiliate Transparency Policy)</h2>
+              <p>
+                第一机场实验室倡导<strong>绝对的商业透明度</strong>。我们深知：如果一个评测机构对自己的资金来源遮遮掩掩，那么其输出的数据和结论就无法获得技术社区的深度信赖。
+              </p>
+
+              <h3 id="affiliate-source">6.1 成本构成与 Affiliate 资金流向</h3>
+              <p>
+                本站并非获得天使投资的商业盈利公司，而是一个由网络技术爱好者共同维护的技术观测项目。实验室每月的刚性运营支出包括：
+              </p>
+              <ul>
+                <li>广东珠海双千兆物理对等宽带年费支出（约 ￥9,600 / 年）；</li>
+                <li>海外香港、日本、新加坡多地探针测速 VPS 与云主机租用成本（约 ￥4,800 / 年）；</li>
+                <li>高防 CDN 加速、域名解析与自动化监测服务器集群维护支出（约 ￥3,200 / 年）。</li>
+              </ul>
+              <p>
+                为维持实验室的可持续运行并不断引入新的评测硬件，本站部分品牌详情页提供的官网注册入口，包含了合规的 <strong>Affiliate（联盟推荐）代码</strong>。
+              </p>
+              <p>
+                <strong>我们向所有访客郑重承诺</strong>：
+              </p>
+              <ol>
+                <li><strong>不增加用户成本</strong>：通过本站外链注册购买，您所支付的费用与直接在厂商官网购买完全一致，甚至因专享优惠码而更加便宜。厂商支付的微薄技术推荐佣金完全由厂商利润支出，用于反哺本站测试机房。</li>
+                <li><strong>不接受有偿删帖与充值提权</strong>：任何品牌方试图通过支付赞助费来要求我们删除负面丢包记录、修改评分或调换排名的请求，将被一概拒绝并保留公开展出的权利。</li>
+                <li><strong>客观呈现优缺点</strong>：即使是为本站提供技术合作的品牌，其在晚高峰出现的丢包波动、退款限制及风控问题，依然会不折不扣地在评测报告中完整呈现。</li>
+              </ol>
+
+              <h3 id="seo-compliance">6.2 遵循 Google 搜索引擎外链合规 (nofollow / sponsored)</h3>
+              <p>
+                第一机场实验室严格遵守 Google 官方发布的《Google 搜索中心外链质量指南》。全站所有导向第三方机场商家的商业外链，均在底层 HTML 代码中强制声明以下安全属性：
+              </p>
+              <pre><code>&lt;!-- 本站所有外部转化链接均严格按照国际规范声明 --&gt;
+&lt;a href="/go/guangsu" target="_blank" rel="nofollow sponsored noopener"&gt;访问品牌官网&lt;/a&gt;</code></pre>
+              <p>
+                这从技术规范层面彻底杜绝了非法传递 PageRank 权重的违规黑帽 SEO 行为，保证了本站在各大搜索引擎中的纯净可信度与合规索引表现。
+              </p>
+            </section>
+
+            <!-- 第七部分：法律合规与用户使用免责须知 -->
+            <section id="disclaimer">
+              <h2>七、 法律合规与用户使用免责须知</h2>
+              <div class="box aw-hero-box p-5 my-4">
+                <p><strong>请所有访问本站的读者在使用本站信息前仔细阅读并遵守以下法律法规须知：</strong></p>
+                <div class="content is-size-7 aw-muted-text">
+                  <p>
+                    <strong>1. 学术研究与技术探讨属性：</strong><br />
+                    本站所刊载的全部文章、测试数据、协议原理与配置代码，仅供计算机网络工程学术研究、跨国企业合规跨境网络架构设计、开源软件功能验证以及外贸合规电商网络选型参考。
+                  </p>
+                  <p>
+                    <strong>2. 严格守法义务：</strong><br />
+                    任何访问本站的中国大陆公民及企事业单位，必须严格遵守《中华人民共和国网络安全法》、《中华人民共和国数据安全法》、《中华人民共和国电信条例》及国家相关互联网法律法规。严禁将本站介绍的技术、工具或第三方服务用于任何危害国家安全、侵犯他人合法权益、传播违法有害信息或违反当地法律法规的活动。
+                  </p>
+                  <p>
+                    <strong>3. 独立第三方责任边界：</strong><br />
+                    第一机场实验室仅提供客观技术参数统计与测评信息展示，本站不隶属于任何第三方机场服务商，亦不向公众销售任何代理节点、流量服务或提供售后退款。用户与各第三方服务商之间达成的任何购买、充值、消费纠纷或财产损失，均由用户与服务商自行依据其双方协议解决，本站不承担任何直接或连带法律责任。
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- 第八部分：常见核心问题深度解答 (FAQ) -->
+            <section id="faq">
+              <h2>八、 常见核心问题深度解答 (FAQ)</h2>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q1：你们如何证明自己没有收钱给特定机场“开小灶”或虚报数据？</h3>
+                <p>
+                  **数据可复现性是最好的公信力证明。** 第一机场实验室在公开评测报告的同时，均详尽列出了测试所使用的命令（如 `mtr -rwc 100 -s 1400`）、海外探针节点所在地、测试时间窗口及落地 IP 的 ASN。任何读者按照我们公开的第五章教程在相同时间段运行命令，均可得到高度吻合的丢包与延迟结果。若任何读者实测发现与本站数据严重不符，欢迎随时通过邮件提交抓包日志，我们核实后将立即更新数据并公示。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q2：为什么你们测速说某个机场晚高峰很稳，但我自己用却经常卡顿？</h3>
+                <p>
+                  网络端到端传输是一个完整的物理链条：<strong>本地设备 → 家庭 WiFi → 本地运营商省网 → 机场国内入口 → 跨境专线 → 海外落地机房 → 目标网站</strong>。
+                  实验室测速使用的是广东电信/联通有线直连双千兆网络。如果您遇到卡顿，常见原因包括：
+                  1. **本地网络瓶颈**：使用廉价无线路由器穿墙衰减严重，或本地运营商（如广电、长城宽带）到机场入口机房路由绕路；
+                  2. **DNS 配置错误**：未在客户端开启 TUN 模式或 Fake-IP 防污染，导致本地频繁发生 DNS 查询超时；
+                  3. **节点选择不当**：选择了该机场中超售严重的公共节点，而非低倍率的纯专线节点。建议对照我们的排障指南逐级排查。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q3：实验室测速探针在广东，那北方联通或移动用户看测试有参考价值吗？</h3>
+                <p>
+                  **具有极高参考价值。** 
+                  目前国内主流专线机场的核心跨境通道主要集中于**深圳–香港（粤港微波/光缆）**与**上海–东京（沪日海缆）**。对于专线机场而言，“国内入口到海外出口”这一段的跨境丢包率是全国用户共享的物理常数。广东探针能最精准地测出专线跨境段本身的物理健康度。对于北方或内陆用户而言，只需加上您本地到广州/上海入口机房的 20–30ms 国内省际延迟，即可准确推算出您的实际体验。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q4：很多博主推荐“1元机场”或“9.9包年”，第一机场为什么对其评分极低甚至不予收录？</h3>
+                <p>
+                  **因为这类产品违背了最基本的商业经济学规律。** 
+                  电信运营商的物理带宽不存在“免费午餐”。标价 1 元或 9.9 包年的机场，其要么是疯狂超售 100 倍的劣质公网直连（晚高峰丢包高达 40% 以上），要么就是准备拉新 2–3 个月后卷款跑路的“杀猪盘”。第一机场实验室拒绝为任何高风险跑路盘背书，收录此类品牌是对读者资产安全与宝贵时间的严重不负责任。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q5：机场如果跑路了，第一机场能帮我追讨退款吗？</h3>
+                <p>
+                  **很遗憾，我们无法代替用户维权或退款。** 
+                  第一机场实验室是独立信息评测机构，不是司法机关或仲裁机构。我们与服务商之间无任何资金托管关系。这就是为什么我们不断在全站强烈建议：**初次选购任何机场服务时，坚决以月付或季付为主，绝不要贪图打折优惠轻易购买两年或三年期套餐**，从而将潜在跑路风险降至最低。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q6：专线商家宣称“保证 100% 永不断线”，这在物理上可能实现吗？</h3>
+                <p>
+                  **绝不可能。** 
+                  任何物理网络设备都有平均无故障时间（MTBF）。海底光缆可能遭遇地震切断或渔船抛锚刮断，陆地光缆可能遭遇市政施工挖断，前置入口机房可能遭遇特大 DDoS 攻击。真正负责任的高端专线厂商，依靠的是**“多入口多海缆灾备热备（如广港 + 沪日双专线无缝切换）”**，在一条物理线路受损时 5 秒内平滑切流，而不是靠口头宣传“永不断线”。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q7：为什么有的专线看 YouTube 4K 速度极快，却根本无法使用 ChatGPT 或 Claude？</h3>
+                <p>
+                  这是因为**流媒体测速与 AI 风控属于两个完全不同的技术层级**：
+                  - 视频播放考验的是**传输层带宽与丢包率**，只要专线带宽足够大且不丢包，即可流畅缓冲 4K/8K；
+                  - AI 平台（OpenAI、Anthropic）考验的是**应用层落地 IP 的信誉欺诈分与 ASN 属性**。如果专线出口接的是万人共用的廉价数据中心 IP，就会被 Cloudflare Turnstile 判定为机器人阻断。解决此问题必须选用具备原生住宅广播落地 IP 的定制节点。
+                </p>
+              </div>
+
+              <div class="mb-4">
+                <h3 class="title is-6 mb-2">Q8：我发现某家被推荐的机场近期频繁断流或疑似跑路，如何向实验室举报？</h3>
+                <p>
+                  我们非常欢迎社区读者的监督反馈！您只需将您的**本地运营商名称、测试时间、发生异常的节点名称以及 MTR/Ping 抓包截图**发送至我们的官方联络邮箱（<code>{site.email}</code>）。实验室技术人员将在 24 小时内启动该节点的专项复核，若证实存在严重劣化或跑路迹象，将立即在全站下架或降级。
+                </p>
+              </div>
+            </section>
+
+            <!-- 第九部分：异常上报与社区通道 -->
+            <section id="feedback">
+              <h2>九、 异常上报、厂商复核与社区通道</h2>
+              <p>
+                维护一个客观透明的中文代理生态需要全行业与广大用户的共同努力。
+              </p>
+              <ul>
+                <li><strong>读者异常上报</strong>：若您在日常使用中发现本站所收录品牌存在虚假宣传、跑路前兆或节点大规模失效，请随时邮件联系我们：<a href={`mailto:${site.email}`}>{site.email}</a>。</li>
+                <li><strong>厂商技术更正与复议</strong>：若您是机场品牌技术负责人，在对节点配置完成升级（如新上线广港/沪日物理专线、引入原生住宅 IP 集群）后希望申请复测，请提供对应的机房物理光纤跳线证明、BGP ASN 路由证明及测试订阅。实验室将在严格实测后更新数据库。</li>
+              </ul>
+            </section>
+
+          </article>
+
+          <!-- 底部品牌库导流与保障卡片 -->
+          <div class="box mt-6 p-5 aw-card">
+            <div class="is-flex is-justify-content-between is-align-items-center is-flex-wrap-wrap gap-3">
+              <div>
+                <h4 class="title is-6 mb-1">准备好基于客观数据挑选可靠专线了吗？</h4>
+                <p class="is-size-7 aw-muted-text mb-0">
+                  第一机场实验室已为您整理收录全网 42+ 家主流品牌的实测延迟、丢包率与套餐规格。
+                </p>
+              </div>
+              <a class="button is-primary is-small" href="/brands">进入 42 家机场品牌全景数据库 →</a>
+            </div>
+          </div>
+
+          <!-- 延伸阅读导航 -->
+          <div class="columns is-multiline mt-4">
+            <div class="column is-4">
+              <div class="box p-4 aw-card" style="height: 100%;">
+                <h5 class="title is-7 text-uppercase mb-2" style="color: var(--aw-accent);">底层专线科普</h5>
+                <a href="/blog/iepl-vs-iplc-architecture" class="has-text-weight-bold is-size-7">IEPL 专线 vs IPLC 专线全面科普指南 →</a>
+                <p class="is-size-7 aw-muted-text mt-1">深度拆解物理光缆与晚高峰 0 丢包机理。</p>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="box p-4 aw-card" style="height: 100%;">
+                <h5 class="title is-7 text-uppercase mb-2" style="color: var(--aw-accent);">客户端调优</h5>
+                <a href="/blog/2026-clash-verge-rev-guide" class="has-text-weight-bold is-size-7">Clash Verge Rev TUN 模式防泄漏指南 →</a>
+                <p class="is-size-7 aw-muted-text mt-1">Mihomo 内核调优与 7 大断网故障排查树。</p>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="box p-4 aw-card" style="height: 100%;">
+                <h5 class="title is-7 text-uppercase mb-2" style="color: var(--aw-accent);">AI 生产力解锁</h5>
+                <a href="/blog/chatgpt-claude-proxy-optimization" class="has-text-weight-bold is-size-7">ChatGPT / Claude 原生住宅 IP 避坑指南 →</a>
+                <p class="is-size-7 aw-muted-text mt-1">解决 1020 阻断与欺诈分优化最佳实践。</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="column is-5">
-          <div class="box aw-hero-box">
-            <p class="aw-eyebrow mb-3">The short version</p>
-            <ul class="content">
-              <li>Founded in 2019</li>
-              <li>Classes capped at sixteen people</li>
-              <li>No contracts — monthly or drop-in</li>
-              <li>Concession places in every class</li>
+
+        <!-- 右侧粘性侧边栏 (桌面端显示) -->
+        <aside class="aw-blog-sidebar">
+          <!-- 目录卡片 -->
+          <div class="aw-toc-card">
+            <div class="aw-toc-header">
+              <span aria-hidden="true">📑</span> 本文目录导航
+            </div>
+            <ul class="aw-toc-list">
+              {tocSections.map((sec) => (
+                <li class={sec.depth === 3 ? 'is-depth-3' : 'is-depth-2'}>
+                  <a href={`#${sec.id}`}>{sec.title}</a>
+                </li>
+              ))}
             </ul>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <section class="section aw-section aw-section-alt">
-    <div class="container">
-      <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">What guides us</p>
-        <h2 class="title is-2">Our values</h2>
-      </div>
+          <!-- 实验室技术规格卡 -->
+          <div class="box p-4 aw-card">
+            <h4 class="title is-7 text-uppercase mb-2" style="letter-spacing: 0.05em; color: var(--aw-muted);">第一机场实验室技术配置</h4>
+            <div class="is-size-7" style="line-height: 1.6; color: var(--aw-text);">
+              <div class="mb-1"><strong>骨干网络：</strong>广东珠海电信 + 联通双千兆物理对等宽带</div>
+              <div class="mb-1"><strong>海外探针：</strong>香港、东京、新加坡等独立 BGP 机房</div>
+              <div class="mb-1"><strong>监测时段：</strong>重点聚焦 20:30–23:00 晚高峰拥塞期</div>
+              <div class="mb-1"><strong>采样工具：</strong>Speedtest CLI、MTR、RegionCheck</div>
+              <div><strong>更新周期：</strong>每季度轮询动态复测淘汰</div>
+            </div>
+          </div>
 
-      <div class="columns">
-        {
-          values.map((value, index) => (
-            <div class="column is-4">
-              <div class="box aw-card">
-                <p class="aw-value-number mb-2">{String(index + 1).padStart(2, '0')}</p>
-                <h3 class="title is-5">{value.title}</h3>
-                <p>{value.description}</p>
+          <!-- 认证专线快捷直达 -->
+          <div class="box p-4 aw-card">
+            <h4 class="title is-7 text-uppercase mb-2" style="letter-spacing: 0.05em; color: var(--aw-muted);">实验室认证专线精选</h4>
+            <div class="is-size-7">
+              <div class="mb-3 pb-2" style="border-bottom: 1px solid var(--aw-border);">
+                <a href="/brands/guangsu" class="has-text-weight-bold">光速云 →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">S 级全专线集群 · 晚高峰 0% 丢包</div>
+              </div>
+              <div class="mb-3 pb-2" style="border-bottom: 1px solid var(--aw-border);">
+                <a href="/brands/firefly" class="has-text-weight-bold">Firefly →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">原生住宅落地 IP · AI 解锁极佳</div>
+              </div>
+              <div>
+                <a href="/brands/weifeng" class="has-text-weight-bold">微风网络 →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">高性价比专线 · 适宜外贸与日常办公</div>
               </div>
             </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="section aw-section">
-    <div class="container">
-      <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">The team</p>
-        <h2 class="title is-2">Coaches on the floor every day</h2>
-        <p class="subtitle is-6">No faceless roster — these are the people you train with.</p>
-      </div>
-
-      <div class="columns">
-        {
-          team.map((member) => (
-            <div class="column is-3">
-              <div class="box aw-card">
-                <div class="is-flex is-align-items-center mb-4">
-                  <span class="aw-avatar mr-4" aria-hidden="true">{member.initials}</span>
-                  <div>
-                    <h3 class="title is-5 mb-1">{member.name}</h3>
-                    <p class="aw-form-note">{member.role}</p>
-                  </div>
-                </div>
-                <p>{member.bio}</p>
-              </div>
+            <div class="mt-3 pt-2 has-text-centered" style="border-top: 1px solid var(--aw-border);">
+              <a href="/brands" class="is-size-7 has-text-weight-semibold">查看全网 42 家品牌全景对比 →</a>
             </div>
-          ))
-        }
+          </div>
+        </aside>
       </div>
     </div>
   </section>
-
-  <CtaBand
-    eyebrow="Come meet us"
-    title="The best way to decide is to visit."
-    text="Walk the floor, meet a coach, and ask every question you have. There is no pressure to sign up today."
-  />
 </BaseLayout>

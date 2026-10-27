@@ -13,9 +13,9 @@ const posts = (await getCollection('blog'))
 <section class="section aw-section">
   <div class="container">
     <div class="aw-section-head">
-      <p class="aw-eyebrow mb-2">From the blog</p>
-      <h2 class="title is-2">Latest articles</h2>
-      <p class="subtitle is-6">Practical notes on training, recovery, and nutrition from the coaches.</p>
+      <p class="aw-eyebrow mb-2">Tech Insights & Guides</p>
+      <h2 class="title is-2">最新技术评测与教程</h2>
+      <p class="subtitle is-6">专线底层技术剖析、代理客户端使用技巧与风控避坑实操。</p>
     </div>
 
     {
@@ -29,7 +29,7 @@ const posts = (await getCollection('blog'))
                   description={post.data.description}
                   pubDate={post.data.pubDate}
                   tags={post.data.tags}
-                  href={`/blog/${post.id}/`}
+                  href={`/blog/${post.id}`}
                   readingTime={readingTime(post.body ?? '')}
                 />
               </div>
@@ -37,12 +37,12 @@ const posts = (await getCollection('blog'))
           }
         </div>
       ) : (
-        <p class="has-text-centered">No posts yet — check back soon.</p>
+        <p class="has-text-centered">暂无文章，稍后更新。</p>
       )
     }
 
     <div class="has-text-centered mt-6">
-      <a class="button is-medium is-outlined" href="/blog">Visit the blog</a>
+      <a class="button is-medium is-outlined" href="/blog">查看更多评测与教程</a>
     </div>
   </div>
 </section>

@@ -1,10 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" rx="24" fill="#0e1216"/>
-  <g fill="#ff6b35">
-    <rect x="18" y="48" width="12" height="32" rx="4"/>
-    <rect x="98" y="48" width="12" height="32" rx="4"/>
-    <rect x="34" y="40" width="8" height="48" rx="3"/>
-    <rect x="86" y="40" width="8" height="48" rx="3"/>
-    <rect x="44" y="56" width="40" height="16" rx="6"/>
-  </g>
+  <defs>
+    <linearGradient id="favBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a222b"/>
+      <stop offset="1" stop-color="#0e1216"/>
+    </linearGradient>
+    <linearGradient id="favAccent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff7b45"/>
+      <stop offset="1" stop-color="#ff521b"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#favBg)"/>
+  <rect width="124" height="124" x="2" y="2" rx="26" fill="none" stroke="rgba(255, 107, 53, 0.25)" stroke-width="2"/>
+  <path d="M38 78 L58 46 L70 64 L90 38" fill="none" stroke="url(#favAccent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="90" cy="38" r="7" fill="#ff7b45"/>
 </svg>

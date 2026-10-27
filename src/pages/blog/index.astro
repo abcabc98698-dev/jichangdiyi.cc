@@ -2,22 +2,43 @@
 import BlogCard from '../../components/BlogCard.astro';
 import PageHero from '../../components/PageHero.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
 import { getCollection } from 'astro:content';
 import { readingTime } from '../../utils/reading-time';
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: '首页',
+      item: site.url,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: '评测与教程',
+      item: `${site.url}/blog`,
+    },
+  ],
+};
 ---
 
 <BaseLayout
-  title="Blog"
-  description="Practical notes on training, recovery, and nutrition from the Astro Wellness coaches."
+  title="网络技术评测与客户端使用教程 · 第一机场"
+  description="深入探讨 IEPL/IPLC 专线底层机理、Clash Verge Rev 客户端配置教程、OpenAI/Claude 住宅 IP 解锁避坑指南。"
+  schema={breadcrumbSchema}
 >
   <PageHero
-    eyebrow="Wellness journal"
-    title="Notes from the gym floor."
-    subtitle="No fitness-industry noise — just practical advice on training, recovery, and nutrition that survives contact with real life."
+    eyebrow="Tech Observatory & Guides"
+    title="网络技术评测与客户端教程"
+    subtitle="深入解析 IEPL/IPLC 专线底层逻辑、跨平台代理客户端配置实操与 AI 生产力解锁避坑方案。"
     compact
   />
 
@@ -34,7 +55,7 @@ const posts = (await getCollection('blog')).sort(
                     description={post.data.description}
                     pubDate={post.data.pubDate}
                     tags={post.data.tags}
-                    href={`/blog/${post.id}/`}
+                    href={`/blog/${post.id}`}
                     readingTime={readingTime(post.body ?? '')}
                   />
                 </div>
@@ -43,8 +64,7 @@ const posts = (await getCollection('blog')).sort(
           </div>
         ) : (
           <p class="has-text-centered">
-            No posts yet. Check back soon — or <a href="/contact">tell us</a> what
-            you would like us to write about.
+            暂无文章，稍后更新。
           </p>
         )
       }

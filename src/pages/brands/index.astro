@@ -1,0 +1,281 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import BrandCard from '../../components/BrandCard.astro';
+import { brands } from '../../data/brands';
+import { site } from '../../data/site';
+
+const canonical = new URL('/brands', site.url);
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: '42 家高速机场品牌与专线服务清单',
+  description: '第一机场实验室收录的 42 家 IEPL/IPLC 专线与网络代理服务商客观横向测评数据。',
+  numberOfItems: brands.length,
+  itemListElement: brands.map((b, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: b.name,
+    url: `${site.url}/brands/${b.id}`,
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: site.url },
+    { '@type': 'ListItem', position: 2, name: '机场品牌库', item: canonical.toString() },
+  ],
+};
+---
+
+<BaseLayout
+  title="机场品牌库 (42家完整收录) · IEPL/IPLC 专线与价格测速矩阵"
+  description="第一机场收录 42 家国内外代理机场，包含光速云、飞猫云、微风网络、Firefly 等。提供真实的晚高峰延迟测速、套餐价格比对及流媒体/ChatGPT 解锁情况。"
+  schema={[itemListSchema, breadcrumbSchema]}
+>
+  <PageHero
+    eyebrow="Network Observatory Matrix"
+    title="42 家机场品牌全景数据库"
+    subtitle="基于实验室真实节点测速与官方公开文档整理。覆盖 IEPL 专线、IPLC 直连及原生 IP 解锁能力，杜绝无脑吹捧，助你透明选型。"
+    compact
+  />
+
+  <section class="section aw-section">
+    <div class="container">
+      <!-- 客户端多维即时筛选工具栏 -->
+      <div class="box aw-filter-box mb-6">
+        <div class="columns is-vcentered">
+          <!-- 搜索输入框 -->
+          <div class="column is-4">
+            <div class="field">
+              <label class="label is-size-7 aw-muted-text" for="brand-search">品牌名称 / 关键词快速检索</label>
+              <div class="control has-icons-left">
+                <input
+                  class="input"
+                  id="brand-search"
+                  type="text"
+                  placeholder="输入品牌名（如：光速云、飞猫、IEPL...）"
+                  autocomplete="off"
+                />
+                <span class="icon is-left">🔍</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 线路类型筛选 -->
+          <div class="column is-5">
+            <label class="label is-size-7 aw-muted-text">线路架构过滤</label>
+            <div class="buttons are-small mb-0" id="filter-line-buttons">
+              <button class="button is-primary is-active" data-filter-line="all">全部线路 ({brands.length})</button>
+              <button class="button is-outlined" data-filter-line="IEPL专线">IEPL 专线</button>
+              <button class="button is-outlined" data-filter-line="IPLC专线">IPLC 专线</button>
+              <button class="button is-outlined" data-filter-line="中转优化">中转/BGP</button>
+            </div>
+          </div>
+
+          <!-- 排序 -->
+          <div class="column is-3">
+            <div class="field">
+              <label class="label is-size-7 aw-muted-text" for="brand-sort">数据排序</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <select id="brand-sort">
+                    <option value="rank-asc">综合推荐排名</option>
+                    <option value="price-asc">入门价格：从低到高</option>
+                    <option value="price-desc">入门价格：从高到低</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="is-flex is-justify-content-between is-align-items-center mt-3 pt-2 border-top">
+          <span class="is-size-7 aw-muted-text">
+            当前展示：<strong class="has-text-primary" id="results-count">{brands.length}</strong> / {brands.length} 家品牌
+          </span>
+          <span class="is-size-7 aw-muted-text">
+            支持 rel="nofollow sponsored noopener" 安全外链
+          </span>
+        </div>
+      </div>
+
+      <!-- 品牌卡片网格 -->
+      <div class="columns is-multiline" id="brands-grid">
+        {
+          brands.map((brand) => (
+            <div
+              class="column is-4 brand-item-col"
+              data-name={brand.name.toLowerCase()}
+              data-id={brand.id}
+              data-line={brand.lineType}
+              data-price={typeof brand.entryPricePerMonth === 'number' ? brand.entryPricePerMonth : 999}
+              data-rank={brand.ranking}
+            >
+              <BrandCard brand={brand} />
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- 无搜索结果状态 (默认完全隐藏) -->
+      <div id="no-results-box" class="box has-text-centered p-6 my-6 is-hidden" style="display: none;">
+        <p class="is-size-3 mb-2">📡</p>
+        <p class="title is-5 mb-2">未找到匹配的机场品牌</p>
+        <p class="subtitle is-6 aw-muted-text mb-4">可以尝试搜索 “专线”、“VLESS” 或清空筛选条件</p>
+        <button class="button is-primary is-small" id="reset-filters-btn">重置所有筛选</button>
+      </div>
+
+      <!-- 品牌库评测与合规说明说明 -->
+      <div class="aw-notice p-5 mt-6">
+        <h4 class="title is-6 mb-2" style="color: var(--aw-text);">第一机场 · 品牌库评测公约说明</h4>
+        <div class="content is-size-7 aw-muted-text">
+          <p class="mb-1">
+            1. <strong>数据真实性原则：</strong>所有价格、测速、节点数量与流媒体解锁均来自 2026 年实验室测速或厂商官方透明公示，没有实测记录的字段严格注明“待核实”，绝不捏造。
+          </p>
+          <p class="mb-1">
+            2. <strong>推广免责声明：</strong>列表与详情页中提供的注册入口均带推广代码，由此产生的充值可能为本站提供维持服务器运行的佣金，但不额外增加您的采购成本，亦不影响我们的评级中立。
+          </p>
+          <p class="mb-0">
+            3. <strong>选型建议：</strong>任何专线均存在被上游运营商临时维护影响的概率，新手建议先选择<strong>月付或小额体验包</strong>实测晚高峰，稳定后再考虑长期订阅。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  function setupBrandFilters() {
+    const searchInput = document.getElementById('brand-search') as HTMLInputElement | null;
+    const lineButtons = document.querySelectorAll<HTMLButtonElement>('#filter-line-buttons button');
+    const sortSelect = document.getElementById('brand-sort') as HTMLSelectElement | null;
+    const grid = document.getElementById('brands-grid');
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.brand-item-col'));
+    const countEl = document.getElementById('results-count');
+    const noResults = document.getElementById('no-results-box');
+    const resetBtn = document.getElementById('reset-filters-btn');
+
+    if (!grid || items.length === 0) return;
+
+    let activeLine = 'all';
+
+    function applyFilters() {
+      const query = (searchInput?.value || '').trim().toLowerCase();
+      const sortVal = sortSelect?.value || 'rank-asc';
+
+      let visibleCount = 0;
+
+      items.forEach((item) => {
+        const name = item.dataset.name || '';
+        const id = item.dataset.id || '';
+        const line = item.dataset.line || '';
+
+        const matchQuery = !query || name.includes(query) || id.includes(query);
+        const matchLine =
+          activeLine === 'all' ||
+          (activeLine === '中转优化'
+            ? line.includes('中转') || line.includes('BGP') || line.includes('直连')
+            : line === activeLine);
+
+        if (matchQuery && matchLine) {
+          item.style.display = '';
+          item.classList.remove('is-hidden');
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+          item.classList.add('is-hidden');
+        }
+      });
+
+      // 排序可见项
+      const visibleItems = items.filter((item) => item.style.display !== 'none');
+      visibleItems.sort((a, b) => {
+        const rankA = parseInt(a.dataset.rank || '999', 10);
+        const rankB = parseInt(b.dataset.rank || '999', 10);
+        const priceA = parseFloat(a.dataset.price || '999');
+        const priceB = parseFloat(b.dataset.price || '999');
+
+        if (sortVal === 'price-asc') return priceA - priceB;
+        if (sortVal === 'price-desc') return priceB - priceA;
+        return rankA - rankB;
+      });
+
+      visibleItems.forEach((item) => grid?.appendChild(item));
+
+      if (countEl) countEl.textContent = String(visibleCount);
+
+      if (noResults) {
+        if (visibleCount === 0) {
+          noResults.style.display = 'block';
+          noResults.classList.remove('is-hidden');
+        } else {
+          noResults.style.display = 'none';
+          noResults.classList.add('is-hidden');
+        }
+      }
+    }
+
+    searchInput?.addEventListener('input', applyFilters);
+    sortSelect?.addEventListener('change', applyFilters);
+
+    lineButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        lineButtons.forEach((b) => {
+          b.classList.remove('is-primary');
+          b.classList.add('is-outlined');
+        });
+        btn.classList.add('is-primary');
+        btn.classList.remove('is-outlined');
+
+        activeLine = btn.dataset.filterLine || 'all';
+        applyFilters();
+      });
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      activeLine = 'all';
+      lineButtons.forEach((b) => {
+        b.classList.toggle('is-primary', b.dataset.filterLine === 'all');
+        b.classList.toggle('is-outlined', b.dataset.filterLine !== 'all');
+      });
+      if (sortSelect) sortSelect.value = 'rank-asc';
+      applyFilters();
+    });
+
+    // 初始执行一次，确保状态与显示完全同步
+    applyFilters();
+  }
+
+  // 支持 Astro SPA ClientRouter 导航与初次加载
+  document.addEventListener('astro:page-load', setupBrandFilters);
+  setupBrandFilters();
+</script>
+
+<style>
+  .aw-filter-box {
+    background-color: var(--aw-ink-raised);
+    border: 1px solid var(--aw-border);
+    border-radius: 0.75rem;
+  }
+  #filter-line-buttons .button.is-outlined {
+    background-color: var(--aw-ink) !important;
+    border: 1px solid var(--aw-border) !important;
+    color: var(--aw-text) !important;
+  }
+  #filter-line-buttons .button.is-outlined:hover {
+    background-color: var(--aw-accent-soft) !important;
+    border-color: var(--aw-accent) !important;
+    color: var(--aw-accent) !important;
+  }
+  #filter-line-buttons .button.is-primary {
+    background-color: var(--aw-accent) !important;
+    border-color: var(--aw-accent) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+</style>

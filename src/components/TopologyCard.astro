@@ -1,0 +1,113 @@
+---
+interface Props {
+  brandName: string;
+  lineType: string;
+}
+
+const { brandName, lineType = 'IEPL 专线' } = Astro.props;
+---
+
+<div class="box aw-topo-box">
+  <div class="is-flex is-justify-content-between is-align-items-center mb-3">
+    <div>
+      <span class="aw-topo-badge">Network Path Observatory</span>
+      <h3 class="title is-5 mb-0 mt-1">{brandName} {lineType}物理链路拓扑图</h3>
+    </div>
+    <span class="is-size-7 aw-topo-muted">端到端专用隧道</span>
+  </div>
+
+  <div class="aw-topo-canvas p-4 my-2">
+    <div class="columns is-vcentered has-text-centered is-mobile is-multiline">
+      <!-- 节点 1：用户终端 -->
+      <div class="column is-3-tablet is-6-mobile">
+        <div class="aw-topo-node">
+          <div class="aw-topo-icon">💻 / 📱</div>
+          <strong class="is-size-7 aw-node-title">本地客户端</strong>
+          <p class="is-size-7 aw-topo-muted mb-0">VLESS / Trojan 加密</p>
+        </div>
+      </div>
+
+      <!-- 节点 2：国内 BGP 中转 -->
+      <div class="column is-3-tablet is-6-mobile">
+        <div class="aw-topo-node">
+          <div class="aw-topo-icon">🏢</div>
+          <strong class="is-size-7 aw-node-title">国内 BGP 入口</strong>
+          <p class="is-size-7 aw-topo-muted mb-0">广州/上海/深圳 节点</p>
+        </div>
+      </div>
+
+      <!-- 节点 3：跨境专用物理光缆 -->
+      <div class="column is-3-tablet is-6-mobile">
+        <div class="aw-topo-node is-highlight">
+          <div class="aw-topo-icon">⚡</div>
+          <strong class="is-size-7 aw-node-title">{lineType} 物理直连</strong>
+          <p class="is-size-7 has-text-warning mb-0">跨越 GFW · 晚高峰 0 丢包</p>
+        </div>
+      </div>
+
+      <!-- 节点 4：海外落地与解锁 -->
+      <div class="column is-3-tablet is-6-mobile">
+        <div class="aw-topo-node">
+          <div class="aw-topo-icon">🌐</div>
+          <strong class="is-size-7 aw-node-title">海外原生落地 IP</strong>
+          <p class="is-size-7 has-text-success mb-0">解锁 ChatGPT / 4K 媒体</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="is-size-7 aw-topo-muted mb-0 mt-2">
+    架构特点：全程通过内网专线物理穿透，数据包在出境时不经公共国际出口队列，彻底隔离运营商 QoS 限速与主动干扰。
+  </p>
+</div>
+
+<style>
+  .aw-topo-box {
+    background-color: var(--aw-ink-raised);
+    border: 1px solid var(--aw-border);
+    border-radius: 0.75rem;
+    color: var(--aw-text);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+  .aw-topo-box .title {
+    color: var(--aw-text) !important;
+  }
+  .aw-topo-muted {
+    color: var(--aw-muted) !important;
+  }
+  .aw-node-title {
+    color: var(--aw-text) !important;
+  }
+  .aw-topo-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(255, 107, 53, 0.12);
+    color: var(--aw-accent);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+  }
+  .aw-topo-canvas {
+    background: var(--aw-stripes);
+    border: 1px solid var(--aw-border);
+    border-radius: 8px;
+  }
+  .aw-topo-node {
+    padding: 0.85rem 0.5rem;
+    background: var(--aw-ink-raised);
+    border: 1px solid var(--aw-border);
+    border-radius: 6px;
+    height: 100%;
+  }
+  .aw-topo-node.is-highlight {
+    background: rgba(255, 107, 53, 0.08);
+    border-color: rgba(255, 107, 53, 0.4);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.15);
+  }
+  .aw-topo-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+</style>

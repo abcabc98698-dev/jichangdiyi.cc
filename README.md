@@ -1,159 +1,139 @@
-# Astro Wellness — Gym Template
+<div align="center">
 
-A modern, dark, energetic **gym template** built with [Astro](https://astro.build)
-and [Bulma](https://bulma.io). It ships with a full set of pages, an SEO-ready
-head, a Markdown blog, and clean, typed sample content — ready to adopt for your
-own gym, studio, or training brand.
+# 🛰️ 第一机场 (jichangdiyi.cc)
 
-## Features
+**全球高速网络专线与机场基础设施独立测评实验室 · 跨平台代理客户端知识库**
 
-- **Pages**: Home (hero, stats, services, testimonials), About, Services (with
-  pricing plans), Blog, Contact, plus a custom 404 page
-- **SPA page transitions**: `<ClientRouter />` gives client-side navigation
-  with a soft fade — and respects `prefers-reduced-motion`
-- **Dark / light mode**: Bulma's built-in themes, switched from the navbar,
-  persisted in `localStorage`, and honoring the OS `prefers-color-scheme` on
-  first visit (applied before first paint, re-applied after SPA navigation)
-- **Blog via Content Collections**: typed frontmatter schema, listing page,
-  individual posts, and an auto-generated **RSS feed**
-- **SEO**: per-page title/description, canonical URLs, Open Graph, JSON-LD
-  structured data (`HealthClub` on the home page, `BlogPosting` on posts),
-  sitemap, and `robots.txt`
-- **Accessible**: semantic markup, skip-to-content link, keyboard-navigable
-  mobile menu, visible focus states, `prefers-reduced-motion` support,
-  `aria` where needed
-- **Responsive & fast**: mobile-first Bulma layout imported module-by-module
-  (no unused Bulma components), zero client-side framework, tiny delegated
-  scripts, and Inter loaded non-blocking — everything renders fast
-- **Strict TypeScript**: every component has typed props, content schema is validated
+[![Astro](https://img.shields.io/badge/Astro-7.4.1-BC52EE?style=flat-square&logo=astro&logoColor=white)](https://astro.build)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.3-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Bulma](https://img.shields.io/badge/Bulma-1.0.4-00D1B2?style=flat-square&logo=bulma&logoColor=white)](https://bulma.io/)
+[![Node](https://img.shields.io/badge/Node-%3E%3D22.22.0-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![SEO Score](https://img.shields.io/badge/SEO%20Health-98.5%2F100-brightgreen?style=flat-square)](https://jichangdiyi.cc)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-## Requirements
+[在线体验与实测数据](https://jichangdiyi.cc) · [42 家品牌全景数据库](https://jichangdiyi.cc/brands) · [专线选型对比](https://jichangdiyi.cc/services) · [实验室方法论](https://jichangdiyi.cc/about)
 
-- Node.js **>= 22.22.0** (Astro 7 minimum)
-- pnpm 10+
+</div>
 
-This project uses **pnpm** exclusively. Do not use npm or yarn.
+---
 
-```sh
-pnpm install
-```
+## 📖 项目简介
 
-## Live demo
+**第一机场（jichangdiyi.cc）** 是一个采用现代 Web 栈构建的高性能、代码级“纯净化”、深度 SEO/GEO 优化的**网络加速基础设施观测站**。
 
-A live demo is the second thing reviewers look at on astro.build. Deploy the
-built `dist/` to any static host (Netlify, Vercel, Cloudflare Pages, GitHub
-Pages) and link it here. `public/_headers` ships Netlify-compatible security
-headers out of the box.
+项目旨在打破中文网络代理行业长期存在的“跑路盘泛滥、参数虚标夸大、博主通篇软文、超售严重”等信息不对称乱象。通过在广东珠海电信与联通骨干网部署物理探针，针对主流 **42+ 家专线机场**在每晚 **20:30–23:00** 拥塞高峰期进行实测抓包，为中文互联网用户、跨境电商从业者、AI 研发工程师与留学生提供透明、可信、可复现的评测基准。
 
-## Commands
+---
 
-| Command          | Action                                       |
-| :--------------- | :------------------------------------------- |
-| `pnpm dev`       | Start the dev server at `localhost:4321`     |
-| `pnpm build`     | Build the production site to `./dist/`        |
-| `pnpm check`     | Type-check the project (Astro + TypeScript)   |
-| `pnpm preview`   | Preview the production build locally         |
+## ✨ 核心特性
 
-Run the dev server in the background with `pnpm astro dev --background`
-(manage it with `astro dev stop | status | logs`).
+- 🌐 **42+ 机场品牌全景数据库**：按线路类型（IEPL专线/IPLC专线/BGP隧道）、最低门槛、协议类型、解锁能力进行结构化录入，支持客户端秒级即时筛选。
+- 🔬 **五维全景评分体系 (FDEM)**：从晚高峰稳定性（30%）、物理架构真伪（25%）、落地纯净度与欺诈分（20%）、协议安全性（15%）与商业信誉（10%）进行标准化打分。
+- 📚 **Section 38 深度知识矩阵**：
+  - [《IEPL 专线 vs IPLC 专线全面科普指南》](https://jichangdiyi.cc/blog/iepl-vs-iplc-architecture)：拆解物理光缆、OTN 封装、QoS WRED 队列丢包机理与 4 种伪专线鉴别。
+  - [《2026 最新 Clash Verge Rev 配置与 TUN 模式指南》](https://jichangdiyi.cc/blog/2026-clash-verge-rev-guide)：Mihomo 内核调优、服务模式、Fake-IP 防 DNS 泄露与 7 大断网故障排查树。
+  - [《ChatGPT / Claude 原生住宅 IP 避坑全指南》](https://jichangdiyi.cc/blog/chatgpt-claude-proxy-optimization)：Cloudflare Turnstile 绕过、MaxMind/Scamalytics 欺诈分排查与 AI 策略组 YAML 配置。
+- 🚀 **极致前端性能与纯静态渲染 (SSG)**：
+  - 基于 **Astro 7 + Bulma 1.0.4 Sass** 静态生成全部 94 个页面；
+  - 采用 `<ClientRouter />` 实现单页应用（SPA）平滑渐变转场；
+  - 本地自托管字体 (`@fontsource/inter`)，零外部阻塞调用；
+  - 动态深浅主题双向响应切换，本地持久化且首屏无白闪（FOUC）。
+- 🛡️ **严格防风控与顶级 SEO / GEO 标准**：
+  - 索引预算优化：Sitemap 精准净化为 51 个核心内容页，门页全屏蔽；
+  - 100% 规范化 Canonical 矩阵（绝对地址、无尾部斜杠、防跨域劫持）；
+  - 全外链严格包裹 `rel="nofollow sponsored noopener"`，彻底规避 Google 算法惩罚；
+  - 完整的 JSON-LD 结构化数据（`WebSite`、`Organization`、`Product`、`Review`、`ItemList`、`CollectionPage`、`AboutPage`、`ContactPage`、`BlogPosting`、`BreadcrumbList`、`FAQPage`）；
+  - 客户端自动化动态 SVG Mermaid 拓扑图渲染。
 
-## Pages
+---
 
-| Route        | Description                                             |
-| :----------- | :------------------------------------------------------ |
-| `/`          | Home: hero, stats, featured services, testimonials, latest articles, CTA |
-| `/about`     | About: story, values, and coaches                       |
-| `/services`  | Services grid + three membership plans                  |
-| `/blog`      | Blog listing (newest first)                             |
-| `/blog/[slug]` | Individual post with reading time and tags             |
-| `/contact`   | Contact details and a form                              |
-| `/rss.xml`   | Auto-generated RSS feed for blog posts                  |
-| `/404`       | Custom not-found page (returned by any static host)     |
-
-## Project structure
+## 📁 目录架构
 
 ```text
-/
-├── public/                 # Static files served as-is (favicons, og-image, robots.txt, _headers)
+jichangdiyi.cc/
+├── public/                 # 静态资源 (robots.txt, favicon, webmanifest, _headers)
 ├── src/
-│   ├── assets/styles/      # Bulma customisation + project styles (main.scss)
-│   ├── components/         # Reusable components (NavBar, PageHero, cards, CTA…)
-│   ├── content/
-│   │   ├── blog/           # Markdown blog posts (add new posts here)
-│   │   └── content.config.ts  # Blog schema (Content Collections)
-│   ├── data/               # Site metadata, services, team, pricing, testimonials
-│   ├── layouts/            # BaseLayout with SEO-ready document head + ClientRouter
-│   ├── pages/              # Routes: index, about, services, blog, contact, 404, rss
-│   └── utils/              # Date, reading-time and phone helpers
-├── astro.config.mjs
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── LICENSE                # MIT
-├── SECURITY.md
-└── package.json
+│   ├── assets/styles/      # Bulma Sass 样式系统 (main.scss, tokens, components)
+│   ├── components/         # 业务组件 (BrandCard, ClientMatrix, SpeedReport, etc.)
+│   ├── content/blog/       # Astro Content Collections (核心支柱长文)
+│   ├── data/               # 结构化数据源 (42家品牌库 brands.ts, 客户端 clients.ts)
+│   ├── layouts/            # 页面通用骨架 (BaseLayout.astro - 统一 Head/SEO/Schema)
+│   └── pages/              # 静态路由体系
+│       ├── index.astro     # 首页
+│       ├── about.astro     # 实验室评测方法论准则 (12,000+字)
+│       ├── services.astro  # 专线选型方案与场景对比
+│       ├── contact.astro   # 联系我们与技术复核
+│       ├── 404.astro       # 404 错误页 (noindex)
+│       ├── brands/         # 42 家品牌详情动态路由与多维筛选库
+│       ├── blog/           # 博客列表与详情动态路由
+│       └── go/             # 商业外链安全重定向门页 (robots 屏蔽)
+├── scripts/                # 自动化构建脚本 (post-build.cjs 等)
+├── astro.config.mjs        # Astro 核心配置与 Sitemap 过滤器
+├── package.json            # 依赖与脚本指令
+└── tsconfig.json           # 严格模式 TypeScript 配置
 ```
 
-## Styling
+---
 
-Bulma is loaded through `src/assets/styles/main.scss`, where the design tokens
-(primary colour, background, text, input colours) are passed to Bulma with Sass
-`@use`. Project-specific classes are prefixed with `aw-` and live in the same
-file, separate from Bulma component rules. Bulma's own utility and layout
-classes are used wherever possible.
+## 🛠️ 本地开发与构建指南
 
-The template uses a **dark theme with an orange accent**, plus an adaptive light
-theme. All tokens live in two places:
+### 环境要求
+- **Node.js** >= `22.22.0`（Astro 7 硬性要求）
+- **pnpm** >= `9.0.0`（严禁使用 npm 或 yarn，以 `pnpm-lock.yaml` 为准）
+- **TypeScript** ^`6.0.0`
 
-1. The Bulma `@use` block at the top of `main.scss` (component-level variables)
-2. The `:root` / `[data-theme='light']` custom properties (`--aw-*`) used by the
-   `aw-` classes — the light theme flips every token automatically
+### 常用命令
 
-Change the accent or background in both places to re-theme the whole site. On
-first visit the theme follows the OS `prefers-color-scheme`; the navbar toggle
-persists the choice in `localStorage`. This is handled by the inline head script
-in `src/layouts/BaseLayout.astro` and re-applied on `astro:page-load` so it
-survives SPA navigation.
+```bash
+# 1. 克隆代码仓库
+git clone https://github.com/abcabc98698-dev/jichangdiyi.cc.git
+cd jichangdiyi.cc
 
-## Customisation guide
+# 2. 安装依赖
+pnpm install
 
-1. **Site identity** — edit `src/data/site.ts`: name, tagline, description,
-   email, phone, address, and `url` (keep it in sync with `astro.config.mjs`).
-2. **Navigation** — add or remove entries in `navItems` in `src/data/site.ts`.
-3. **Services / team / pricing / testimonials** — edit the matching files in
-   `src/data/`.
-4. **Blog** — add `.md` files under `src/content/blog/` with frontmatter
-   `title`, `description`, `pubDate`, and optional `tags`/`updatedDate`.
-   The listing and RSS feed update automatically.
-5. **Logo & favicons** — replace `public/favicon.svg` (and `.ico`) with your own
-   mark; the navbar uses a small inline SVG dumbbell in `NavBar.astro`.
-   `og-image.png` is the social share image (1200×630; `og-image.svg` is its
-   editable source). Swap in real photos anytime — they are not required for
-   the layout to look complete.
-6. **Contact form** — the site is fully static, so the form validates in the
-   browser and opens the visitor's email client with the message pre-filled,
-   addressed to `site.email`. Replace it with a form endpoint (e.g. Formspree,
-   Netlify Forms, or your own API) for a real backend.
-7. **SEO before deploy** — set `site` in `astro.config.mjs` to your real domain,
-   update the `Sitemap` URL in `public/robots.txt`, and regenerate/overwrite
-   `og-image.png` with your own branding.
+# 3. 启动本地开发服务器
+pnpm dev
+# 或以独立后台守护进程启动:
+# pnpm astro dev --background
 
-## Deploying
+# 4. 执行全站严格类型检查 (0 errors, 0 warnings)
+pnpm check
 
-`pnpm build` produces a static site in `dist/` that can be hosted on any static
-host (Netlify, Vercel, Cloudflare Pages, GitHub Pages, etc.). `public/_headers`
-applies Netlify-compatible security headers (CSP, HSTS, X-Frame-Options…);
-other hosts may ignore it — set equivalent headers there.
+# 5. 执行生产级全站静态构建 (输出到 dist/)
+pnpm build
 
-## Publishing to astro.build/themes
+# 6. 本地预览生产构建产物
+pnpm preview
+```
 
-The template is ready for the [Astro template gallery](https://astro.build/themes/).
-Before submitting:
+---
 
-1. Create a **repository from this template** on GitHub and push the code.
-2. Set repo **topics**: `astro`, `bulma`, `template`, `typescript`, plus any
-   niche tags (e.g. `gym`, `hacktoberfest`).
-3. Deploy the demo (Netlify, Vercel, …) and add the **live demo link** to the
-   [Live demo](#live-demo) section above.
-4. Keep the `LICENSE` (MIT) and point `repo` metadata in `package.json` at the
-   new repository.
-5. Submit the repo through the astro.build themes form.
+## 🚀 部署上线指南
+
+本项目为纯静态 SSG 架构，产物完全解耦，支持零成本部署于全球各大现代边缘托管平台：
+
+### 1. Cloudflare Pages（推荐）
+- **构建命令**：`pnpm build`
+- **构建输出目录**：`dist`
+- **Node.js 版本环境变量**：`NODE_VERSION = 22.22.0`
+
+### 2. Vercel / Netlify
+- 导入 Git 仓库，选择 **Astro** 框架预设即可全自动识别构建。
+
+### 3. Nginx / Docker
+将 `dist/` 目录挂载至 Nginx 根目录，配置 `try_files $uri $uri/ =404;` 即可极速伺服。
+
+---
+
+## ⚖️ 评测公约与免责声明
+
+1. **客观中立原则**：本站不销售代理节点、不运营代理服务器、不受任何服务商商业控股。所有实测数据均基于物理探针真实抓取。
+2. **商业透明度**：本站部分注册入口包含合规的 Affiliate 推广参数，用于反哺测速服务器与物理宽带开销。全站商业外链强制标记 `rel="nofollow sponsored noopener"`，绝不影响用户实际支付价格，绝不接受有偿删帖。
+3. **法律法规合规**：本站内容仅用于计算机网络科学研究、企业跨境远程办公与技术探讨，请所有访客严格遵守当地法律法规。
+
+---
+
+## 📄 开源许可证
+
+本项目基于 [MIT License](LICENSE) 协议开源。

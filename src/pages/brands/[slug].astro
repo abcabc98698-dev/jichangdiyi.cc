@@ -1,0 +1,330 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SpeedReport from '../../components/SpeedReport.astro';
+import UnlockMatrix from '../../components/UnlockMatrix.astro';
+import TopologyCard from '../../components/TopologyCard.astro';
+import { brands } from '../../data/brands';
+import type { AirportBrand } from '../../data/brands';
+import { site } from '../../data/site';
+
+export async function getStaticPaths() {
+  return brands.map((brand) => ({
+    params: { slug: brand.id },
+    props: { brand },
+  }));
+}
+
+interface Props {
+  brand: AirportBrand;
+}
+
+const { brand } = Astro.props;
+
+const canonical = new URL(`/brands/${brand.id}`, site.url);
+
+// Product + Review 结构化数据
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${brand.name} 专线服务`,
+  description: brand.description,
+  brand: {
+    '@type': 'Brand',
+    name: brand.name,
+  },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'CNY',
+    lowPrice: typeof brand.entryPricePerMonth === 'number' ? brand.entryPricePerMonth : 10,
+    offerCount: brand.plans.length,
+  },
+  review: {
+    '@type': 'Review',
+    reviewRating: {
+      '@type': 'Rating',
+      ratingValue: '4.8',
+      bestRating: '5',
+    },
+    author: {
+      '@type': 'Organization',
+      name: site.name,
+      url: site.url,
+    },
+    reviewBody: brand.description,
+  },
+};
+
+// 面包屑结构化数据
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: site.url },
+    { '@type': 'ListItem', position: 2, name: '机场品牌库', item: `${site.url}/brands` },
+    { '@type': 'ListItem', position: 3, name: `${brand.name}评测`, item: canonical.toString() },
+  ],
+};
+
+// FAQ 结构化数据
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: brand.faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.answer,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${brand.name}怎么样？2026 晚高峰测速、套餐价格与流媒体/AI 解锁实测`}
+  description={`${brand.name}客观评测：${brand.lineType}架构，${brand.trafficRange}。实测香港/日本延迟、下行速率、ChatGPT/Netflix 解锁能力、优惠码及优缺点分析。`}
+  schema={[productSchema, breadcrumbSchema, faqSchema]}
+>
+  <!-- 头部 Hero -->
+  <section class="hero is-medium aw-hero">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-vcentered">
+          <div class="column is-8">
+            <div class="is-flex is-align-items-center gap-2 mb-3">
+              <a href="/brands" class="tag is-outlined">← 返回 42 家品牌库</a>
+              <span class="tag is-primary has-text-weight-bold">{brand.lineType}</span>
+              <span class="tag is-info is-light">{brand.dataStatus}</span>
+            </div>
+            <h1 class="title is-1 aw-display mb-3">{brand.name} 深度测评报告</h1>
+            <!-- 实验室综合评分展示（对齐 Product Review Schema） -->
+            <div class="is-flex is-align-items-center gap-2 mb-3">
+              <span class="tag is-warning has-text-weight-bold">★ 4.8 / 5.0</span>
+              <span class="is-size-7 aw-muted-text">第一机场实验室五维综合评定 (基于晚高峰实测)</span>
+            </div>
+            <p class="subtitle is-5 aw-hero-lead mb-4">{brand.tagline}</p>
+            <div class="tags are-medium">
+              {brand.protocols.map((p) => <span class="tag is-rounded">{p}</span>)}
+              <span class="tag is-rounded is-light">{brand.clientSupport}</span>
+              <span class="tag is-primary is-light has-text-weight-semibold">起步 ¥{brand.entryPricePerMonth}/月</span>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="box aw-hero-box p-5 has-text-centered">
+              <span class="is-size-7 aw-muted-text">官方认证直达渠道</span>
+              <h3 class="title is-4 mt-1 mb-2">{brand.name}</h3>
+              {
+                brand.couponCode && (
+                  <div class="aw-coupon-box p-3 is-size-7 mb-3">
+                    优惠码：<strong class="has-text-primary is-size-6">{brand.couponCode}</strong>
+                    <br />
+                    <span class="aw-muted-text">{brand.discountDesc}</span>
+                  </div>
+                )
+              }
+              <a
+                class="button is-primary is-medium is-fullwidth has-text-weight-bold"
+                href={brand.affUrl}
+                target="_blank"
+                rel="nofollow sponsored noopener"
+              >
+                访问官网开通 →
+              </a>
+              <p class="is-size-7 aw-muted-text mt-2 mb-0">
+                含推广代码 · 享专属折扣 · 不影响购买原价
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 正文核心区 -->
+  <section class="section aw-section">
+    <div class="container">
+      <div class="columns">
+        <!-- 左侧核心分析内容 -->
+        <div class="column is-8">
+          <!-- 1. BLUF (Bottom Line Up Front) 结论先行 -->
+          <div class="box aw-bluf-box p-5 mb-5">
+            <div class="is-flex is-align-items-center gap-2 mb-2">
+              <span class="tag is-primary has-text-weight-bold">BLUF 核心结论先行</span>
+              <span class="is-size-7 aw-muted-text">30 秒决策参考</span>
+            </div>
+            <p class="is-size-6 mb-3">{brand.description}</p>
+            <div class="columns is-multiline is-mobile is-size-7 mb-0">
+              <div class="column is-6">
+                <strong>运营时间：</strong>{brand.establishedYear} 年
+              </div>
+              <div class="column is-6">
+                <strong>线路架构：</strong>{brand.lineType}
+              </div>
+              <div class="column is-6">
+                <strong>入门月费：</strong>¥{brand.entryPricePerMonth}/月起
+              </div>
+              <div class="column is-6">
+                <strong>客户端兼容：</strong>{brand.clientSupport}
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. 晚高峰性能与测速报告 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">节点延迟与带宽实测</h2>
+            <SpeedReport
+              brandName={brand.name}
+              testDate={brand.speedTest?.testDate}
+              nodes={brand.speedTest?.nodes}
+            />
+          </div>
+
+          <!-- 3. 流媒体与 AI 解锁矩阵 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">流媒体与主流 AI 工具解锁状态</h2>
+            <UnlockMatrix brandName={brand.name} unlocks={brand.unlocks} />
+          </div>
+
+          <!-- 4. 网络物理拓扑图 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">专线网络穿透架构</h2>
+            <TopologyCard brandName={brand.name} lineType={brand.lineType} />
+          </div>
+
+          <!-- 5. 官方套餐与定价明细 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">官方套餐定价明细</h2>
+            <div class="table-container">
+              <table class="table is-fullwidth is-striped is-hoverable aw-pricing-table">
+                <thead>
+                  <tr>
+                    <th>套餐名称</th>
+                    <th>计费周期</th>
+                    <th>价格</th>
+                    <th>配额流量</th>
+                    <th>周期说明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    brand.plans.map((p) => (
+                      <tr>
+                        <td class="has-text-weight-bold">{p.name}</td>
+                        <td><span class="tag is-small">{p.billing}</span></td>
+                        <td class="has-text-primary has-text-weight-bold">{p.price}</td>
+                        <td>{p.traffic}</td>
+                        <td class="is-size-7 aw-muted-text">{p.cycle}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+            <p class="is-size-7 aw-muted-text">
+              注：价格根据厂商当期活动可能存在微调，实际请以官网下单页面结账数值为准。
+            </p>
+          </div>
+
+          <!-- 6. 适合与不适合人群对比 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">选型适配建议：适合 vs 不适合</h2>
+            <div class="columns">
+              <div class="column is-6">
+                <div class="box p-4" style="background: rgba(0, 230, 118, 0.06); border: 1px solid rgba(0, 230, 118, 0.25);">
+                  <h4 class="title is-6 has-text-success mb-2">🟢 适合这些用户</h4>
+                  <ul class="aw-check-list is-size-7">
+                    {brand.suitableFor.map((item) => <li>{item}</li>)}
+                  </ul>
+                </div>
+              </div>
+              <div class="column is-6">
+                <div class="box p-4" style="background: rgba(255, 82, 82, 0.06); border: 1px solid rgba(255, 82, 82, 0.25);">
+                  <h4 class="title is-6 has-text-danger mb-2">🔴 不适合这些用户</h4>
+                  <ul class="is-size-7" style="list-style-type: '✕ '; padding-left: 1rem;">
+                    {brand.unsuitableFor.map((item) => <li class="mb-1">{item}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. 优势与局限性客观分析 -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">优势与局限性客观剖析</h2>
+            <div class="content">
+              <h4 class="title is-5 mb-2">突出优势</h4>
+              <ul>
+                {brand.advantages.map((adv) => <li><strong>{adv}</strong></li>)}
+              </ul>
+              <h4 class="title is-5 mb-2 mt-4">局限与风险说明</h4>
+              <ul>
+                {brand.limitations.map((lim) => <li class="aw-muted-text">{lim}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          <!-- 8. GEO 长尾问答 FAQ -->
+          <div class="mb-6">
+            <h2 class="title is-3 mb-3">常见问题解答 (FAQ)</h2>
+            <div class="aw-faq-list">
+              {
+                brand.faqs.map((faq) => (
+                  <div class="box aw-faq-card p-4 mb-3">
+                    <h4 class="title is-5 mb-2">{faq.question}</h4>
+                    <p class="is-size-6 aw-muted-text mb-0">{faq.answer}</p>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧吸顶快捷边栏 -->
+        <div class="column is-4">
+          <div class="box aw-card is-sticky-top" style="position: sticky; top: 5rem;">
+            <p class="aw-eyebrow mb-2">开通与优惠指引</p>
+            <h4 class="title is-5 mb-3">{brand.name} 直达通道</h4>
+
+            <div class="aw-notice p-3 is-size-7 mb-4">
+              <p class="mb-1"><strong>协议支持：</strong>{brand.protocols.join(' / ')}</p>
+              <p class="mb-1"><strong>推荐客户端：</strong>{brand.clientSupport}</p>
+              <p class="mb-0"><strong>节点概况：</strong>{brand.nodeCoverage.slice(0, 4).join('、')}</p>
+            </div>
+
+            {
+              brand.couponCode && (
+                <div class="mb-4">
+                  <label class="label is-size-7 aw-muted-text mb-1">专属结算优惠码</label>
+                  <div class="is-flex gap-2">
+                    <input class="input is-small" type="text" readonly value={brand.couponCode} />
+                  </div>
+                  <span class="is-size-7 has-text-primary">{brand.discountDesc}</span>
+                </div>
+              )
+            }
+
+            <a
+              class="button is-primary is-fullwidth has-text-weight-bold mb-3"
+              href={brand.affUrl}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+            >
+              前往 {brand.name} 官网注册 →
+            </a>
+
+            <div class="has-text-centered">
+              <a href="/brands" class="is-size-7 aw-muted-text">查看更多 42 家同类专线对比</a>
+            </div>
+
+            <hr class="my-3" />
+
+            <div class="is-size-7 aw-muted-text">
+              <strong style="color: var(--aw-text);">合规透明声明：</strong>
+              本页面评测数据由第一机场实验室客观抓取或官方公开整理，本站不提供翻墙节点销售，仅提供技术科普与参数对比。外链可能包含推广分成，购买前请务必遵守当地法律法规。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

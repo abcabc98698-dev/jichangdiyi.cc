@@ -1,0 +1,41 @@
+---
+import { brands } from '../../data/brands';
+
+export async function getStaticPaths() {
+  return brands.map((brand) => ({
+    params: { slug: brand.id },
+    props: { brand },
+  }));
+}
+
+const { brand } = Astro.props;
+const targetUrl = brand.affUrl.startsWith('http') && !brand.affUrl.includes('/go/')
+  ? brand.affUrl
+  : `/brands/${brand.id}`;
+
+const selfCanonical = `https://jichangdiyi.cc/go/${brand.id}`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+    <link rel="canonical" href={selfCanonical} />
+    <title>正在跳转至 {brand.name} · 第一机场</title>
+  </head>
+  <body style="background:#0e1216; color:#f4f7f9; font-family:sans-serif; text-align:center; padding-top:20vh;">
+    <p>正在前往 {brand.name} 官方开通通道...</p>
+    <p>
+      <a
+        style="color:#ff6b35;"
+        href={targetUrl}
+        target="_blank"
+        rel="nofollow sponsored noopener"
+      >
+        若页面未自动跳转，请点击此处直接前往 →
+      </a>
+    </p>
+  </body>
+</html>

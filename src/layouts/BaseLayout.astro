@@ -3,6 +3,11 @@ import { ClientRouter } from 'astro:transitions';
 import Footer from '../components/Footer.astro';
 import NavBar from '../components/NavBar.astro';
 import { site } from '../data/site';
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
+import '@fontsource/inter/latin-700.css';
+import '@fontsource/inter/latin-800.css';
 import '../assets/styles/main.scss';
 
 interface Props {
@@ -10,34 +15,70 @@ interface Props {
   description?: string;
   /** Open Graph type, e.g. "website" (default) or "article" for blog posts. */
   ogType?: string;
-  /** JSON-LD structured data (e.g. HealthClub, BlogPosting). Serialized as-is. */
-  schema?: Record<string, unknown>;
+  /** Custom robots directive, defaults to standard indexable settings */
+  robots?: string;
+  /** JSON-LD structured data. Serialized as-is. */
+  schema?: Record<string, unknown> | Array<Record<string, unknown>>;
+  /** Article metadata for OpenGraph */
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+  tags?: string[];
 }
 
 const {
   title,
   description = site.description,
   ogType = 'website',
+  robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
   schema,
+  publishedTime,
+  modifiedTime,
+  author = site.name,
+  tags,
 } = Astro.props;
 
 const pageTitle = title === site.name ? title : `${title} · ${site.name}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const fontUrl =
-  'https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap';
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonical = new URL(pathname, Astro.site);
+
+const defaultWebsiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: site.name,
+  url: site.url,
+  description: site.description,
+};
+
+const defaultOrganizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: site.url,
+  logo: `${site.url}/og-image.png`,
+  email: site.email,
+  description: site.description,
+};
+
+const baseSchemas = [defaultWebsiteSchema, defaultOrganizationSchema];
+const schemas = schema
+  ? Array.isArray(schema)
+    ? [...baseSchemas, ...schema]
+    : [...baseSchemas, schema]
+  : baseSchemas;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#0e1216" />
     <meta name="description" content={description} />
 
     <script is:inline>
       // Apply the theme before first paint to avoid a flash of the wrong theme.
-      // No stored choice: follow the OS `prefers-color-scheme` (light default).
       (function () {
         try {
           const stored = localStorage.getItem('theme');
@@ -51,17 +92,6 @@ const fontUrl =
       })();
     </script>
 
-    <!-- Inter, loaded async so it never blocks first paint -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href={fontUrl} />
-    <link
-      rel="stylesheet"
-      href={fontUrl}
-      media="print"
-      onload="this.setAttribute('media', 'all')"
-    />
-
     <!-- Canonical + Open Graph -->
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content={ogType} />
@@ -69,11 +99,44 @@ const fontUrl =
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="zh_CN" />
     <meta property="og:image" content={new URL('/og-image.png', Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+
+    {/* Article-specific OpenGraph meta tags */}
+    {ogType === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    )}
+    {ogType === 'article' && modifiedTime && (
+      <meta property="article:modified_time" content={modifiedTime.toISOString()} />
+    )}
+    {ogType === 'article' && author && (
+      <meta property="article:author" content={author} />
+    )}
+    {ogType === 'article' && tags && tags.map((t) => (
+      <meta property="article:tag" content={t} />
+    ))}
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL('/og-image.png', Astro.site)} />
+
+    {/* 搜索引擎站长平台所有权验证（安全预留：只有提供时才输出对应 meta） */}
+    {site.verification?.google && (
+      <meta name="google-site-verification" content={site.verification.google} />
+    )}
+    {site.verification?.bing && (
+      <meta name="msvalidate.01" content={site.verification.bing} />
+    )}
+    {site.verification?.baidu && (
+      <meta name="baidu-site-verification" content={site.verification.baidu} />
+    )}
+    {site.verification?.shenma && (
+      <meta name="shenma-site-verification" content={site.verification.shenma} />
+    )}
 
     <!-- RSS feed for the blog -->
     <link
@@ -85,14 +148,15 @@ const fontUrl =
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="manifest" href="/site.webmanifest" />
     <title>{pageTitle}</title>
 
     <ClientRouter />
 
     {
-      schema && (
-        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
-      )
+      schemas.map((s) => (
+        <script type="application/ld+json" set:html={JSON.stringify(s)} />
+      ))
     }
   </head>
   <body>

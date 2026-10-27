@@ -1,83 +1,136 @@
 ---
-import CtaBand from '../components/CtaBand.astro';
-import PageHero from '../components/PageHero.astro';
-import ServiceCard from '../components/ServiceCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { plans } from '../data/pricing';
-import { services } from '../data/services';
+import PageHero from '../components/PageHero.astro';
+import BrandCard from '../components/BrandCard.astro';
+import { brands } from '../data/brands';
+import { site } from '../data/site';
+
+const canonical = new URL('/services', site.url);
+const topFeatured = brands.filter((b) => b.isFeatured).slice(0, 6);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: site.url },
+    { '@type': 'ListItem', position: 2, name: '专线选型对比', item: canonical.toString() },
+  ],
+};
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: '专线选型指南与方案场景对比 · 第一机场',
+  description: '按预算、线路架构（IEPL/IPLC）与应用场景（AI/电商/追剧）精细化对比主流专线机场。',
+  url: canonical.toString(),
+};
+
+const scenarios = [
+  {
+    icon: '🤖',
+    title: 'AI 大模型与学术科研',
+    recommend: 'S 级纯专线 + 原生住宅落地 IP',
+    desc: '高频调用 ChatGPT、Claude 3.7、Midjourney 或拉取 HuggingFace/GitHub 代码，要求出口欺诈分低于 20，避免触发 1020 访问拒绝。',
+    suitable: ['光速云', 'Firefly'],
+  },
+  {
+    icon: '📦',
+    title: '外贸独立站与跨境电商',
+    recommend: '多入口 BGP + 固定静态 IP 节点',
+    desc: '管理 Amazon、Shopify、PayPal 或 TikTok Shop 店铺，要求 IP 极度纯净且固定不跳跃，严防店铺关联封禁。',
+    suitable: ['微风网络', '光速云'],
+  },
+  {
+    icon: '🎬',
+    title: '4K/8K 流媒体高码率追剧',
+    recommend: '大冗余大带宽专线（倍率 1.0 以下）',
+    desc: '畅看 Netflix、Disney+、YouTube Premium 及动画疯非自制剧，要求香港/新加坡节点晚高峰下行速率达 500Mbps+。',
+    suitable: ['一帆云', '肥猫云'],
+  },
+  {
+    icon: '🎮',
+    title: '外服游戏联机与电竞',
+    recommend: '全专线 + FullCone NAT (UDP 转发)',
+    desc: '联机 Steam、Apex、英雄联盟台服或主机平台，要求 Jitter 延迟抖动低于 2ms，严防丢包造成的瞬间人物漂移。',
+    suitable: ['Firefly', '梯子云'],
+  },
+];
 ---
 
 <BaseLayout
-  title="Services"
-  description="Group classes, personal training, nutrition coaching, recovery work, and open gym access — all under one roof."
+  title="专线选型指南与方案对比 · 第一机场"
+  description="按预算、线路架构（IEPL/IPLC）与应用场景（AI/电商/追剧）精细化对比主流专线机场。"
+  schema={[breadcrumbSchema, collectionSchema]}
 >
   <PageHero
-    eyebrow="Services &amp; pricing"
-    title="Everything you need, one membership."
-    subtitle="Pick a service or combine them. Every plan starts with a free trial class, because you should feel the gym before you commit."
+    eyebrow="Selection Guide & Scenarios"
+    title="专线选型方案与场景对比"
+    subtitle="从 5.6 元极限平价到 2000Mbps 企业级物理直连，挑选最贴合您使用习惯的网络方案。"
     compact
   />
 
   <section class="section aw-section">
     <div class="container">
-      <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">What we do</p>
-        <h2 class="title is-2">Our services</h2>
+      <!-- 面包屑导航 -->
+      <nav class="breadcrumb is-small mb-5" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li class="is-active"><span aria-current="page">专线选型对比</span></li>
+        </ul>
+      </nav>
+
+      <!-- 场景选型决策卡片矩阵 -->
+      <div class="mb-6">
+        <h2 class="title is-3 mb-2">主流应用场景与推荐选型准则</h2>
+        <p class="aw-muted-text mb-4">根据您的核心生产力需求快速匹配最佳物理线路与落地 IP 类型：</p>
+        
+        <div class="columns is-multiline">
+          {
+            scenarios.map((s) => (
+              <div class="column is-6">
+                <div class="box aw-card p-5" style="height: 100%;">
+                  <div class="is-flex is-align-items-center gap-2 mb-2">
+                    <span class="is-size-4">{s.icon}</span>
+                    <h3 class="title is-5 mb-0">{s.title}</h3>
+                  </div>
+                  <div class="tag is-primary is-light mb-3 has-text-weight-bold">{s.recommend}</div>
+                  <p class="is-size-6 aw-muted-text mb-3">{s.desc}</p>
+                  <div class="is-size-7">
+                    <strong style="color: var(--aw-text);">适配标杆：</strong>
+                    {s.suitable.map((item) => (
+                      <span class="tag is-small is-rounded is-outlined mr-2">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <hr class="my-6" />
+
+      <!-- 精选标杆品牌实测卡片 -->
+      <div class="mb-4">
+        <h2 class="title is-3 mb-2">实验室五星标杆品牌精选</h2>
+        <p class="aw-muted-text mb-5">基于 2026 晚高峰实测稳定性与原生解锁能力严选收录：</p>
       </div>
 
       <div class="columns is-multiline">
         {
-          services.map((service) => (
+          topFeatured.map((brand) => (
             <div class="column is-4">
-              <ServiceCard {...service} />
+              <BrandCard brand={brand} />
             </div>
           ))
         }
       </div>
-    </div>
-  </section>
 
-  <section class="section aw-section aw-section-alt">
-    <div class="container">
-      <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">Membership</p>
-        <h2 class="title is-2">Plans that scale with you</h2>
-        <p class="subtitle is-6">
-          No contracts, cancel anytime, and every plan includes the free trial class.
-        </p>
-      </div>
-
-      <div class="columns" style="--column-gap: 1.5rem">
-        {
-          plans.map((plan) => (
-            <div class="column is-4">
-              <div class:list={['box aw-card aw-plan', { 'is-highlighted': plan.highlighted }]}>
-                {plan.highlighted && <div class="aw-plan-badge">Most popular</div>}
-                <h3 class="title is-4">{plan.name}</h3>
-                <p class="aw-price mb-2">
-                  ${plan.price} <span>{plan.period}</span>
-                </p>
-                <p class="mb-4">{plan.description}</p>
-                <ul class="aw-check-list mb-4">
-                  {plan.features.map((feature) => <li>{feature}</li>)}
-                </ul>
-                <a
-                  class:list={['button is-fullwidth', plan.highlighted ? 'is-primary' : 'is-outlined']}
-                  href="/contact"
-                >
-                  Start with {plan.name}
-                </a>
-              </div>
-            </div>
-          ))
-        }
+      <div class="has-text-centered mt-6">
+        <a class="button is-primary is-medium has-text-weight-bold" href="/brands">
+          查看完整 42 家品牌库多维筛选器 →
+        </a>
       </div>
     </div>
   </section>
-
-  <CtaBand
-    eyebrow="Not sure which plan?"
-    title="Book a free class and decide later."
-    text="Try the floor first. Our coaches will happily recommend the right starting point — and the right plan is the one you will actually use."
-  />
 </BaseLayout>

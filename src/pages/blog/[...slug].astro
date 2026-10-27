@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
 import { formatDate } from '../../utils/date';
 import { readingTime } from '../../utils/reading-time';
 
@@ -18,9 +19,14 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
+// Filter H2 and H3 for Table of Contents
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const canonical = new URL(pathname, Astro.site);
+
 const postSchema = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
@@ -30,8 +36,46 @@ const postSchema = {
   ...(post.data.updatedDate && {
     dateModified: post.data.updatedDate.toISOString(),
   }),
-  url: canonical,
-  author: { '@type': 'Organization', name: 'Astro Wellness' },
+  url: canonical.toString(),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonical.toString(),
+  },
+  author: {
+    '@type': 'Organization',
+    name: site.name,
+    url: site.url,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: site.name,
+    url: site.url,
+  },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: '首页',
+      item: site.url,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: '评测与教程',
+      item: `${site.url}/blog`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: post.data.title,
+      item: canonical.toString(),
+    },
+  ],
 };
 ---
 
@@ -39,31 +83,171 @@ const postSchema = {
   title={post.data.title}
   description={post.data.description}
   ogType="article"
-  schema={postSchema}
+  publishedTime={post.data.pubDate}
+  modifiedTime={post.data.updatedDate}
+  author={site.name}
+  tags={post.data.tags}
+  schema={[postSchema, breadcrumbSchema]}
 >
-  <section class="section aw-section">
+  <section class="section aw-section py-5">
     <div class="container">
-      <article class="aw-prose">
-        <p class="aw-blog-meta mb-3">
+      <!-- 面包屑导航 -->
+      <nav class="breadcrumb is-small mb-4" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li><a href="/blog">评测与教程</a></li>
+          <li class="is-active"><span aria-current="page">文章详情</span></li>
+        </ul>
+      </nav>
+
+      <!-- 文章头部元数据 -->
+      <div class="aw-blog-meta">
+        <span class="aw-meta-badge">
           <time datetime={post.data.pubDate.toISOString()}>
-            {formatDate(post.data.pubDate)}
+            📅 发布于 {formatDate(post.data.pubDate)}
           </time>
-          {' · '}
-          {readingTime(post.body ?? '')}
-        </p>
+        </span>
+        {post.data.updatedDate && (
+          <span class="aw-meta-badge">
+            <time datetime={post.data.updatedDate.toISOString()}>
+              🔄 修订于 {formatDate(post.data.updatedDate)}
+            </time>
+          </span>
+        )}
+        <span class="aw-meta-badge">
+          ⏱️ 预计阅读 {readingTime(post.body ?? '')}
+        </span>
+        <span class="aw-meta-badge">
+          🔬 第一机场实验室 · 网络评测组
+        </span>
+      </div>
 
-        <h1 class="title is-1 mb-5">{post.data.title}</h1>
+      <!-- 优化后的大标题：平衡行高与字号，避免突兀换行 -->
+      <h1 class="aw-blog-title">{post.data.title}</h1>
 
-        <div class="mb-6">
-          {post.data.tags.map((tag) => <span class="aw-tag">#{tag}</span>)}
+      <!-- 标签展示 -->
+      <div class="mb-5">
+        {post.data.tags.map((tag) => <span class="aw-tag">#{tag}</span>)}
+      </div>
+
+      <hr class="my-4" style="background-color: var(--aw-border); height: 1px; border: none;" />
+
+      <!-- 主双栏布局：左侧正文 + 右侧粘性目录与推荐侧边栏 -->
+      <div class="aw-blog-layout">
+        <div class="aw-blog-main">
+          <article class="aw-prose">
+            <Content />
+          </article>
+
+          <!-- 底部品牌库导流与保障卡片 -->
+          <div class="box mt-6 p-5 aw-card">
+            <div class="is-flex is-justify-content-between is-align-items-center is-flex-wrap-wrap gap-3">
+              <div>
+                <h4 class="title is-6 mb-1">想要了解更多节点测速与横向对比？</h4>
+                <p class="is-size-7 aw-muted-text mb-0">
+                  第一机场实验室已收录 42+ 家主流 IEPL/IPLC 专线品牌，提供晚高峰真实丢包、延迟与风控纯净度测评。
+                </p>
+              </div>
+              <a class="button is-primary is-small" href="/brands">前往 42 家品牌全景数据库 →</a>
+            </div>
+          </div>
+
+          <p class="mt-5">
+            <a href="/blog" class="is-size-6 has-text-weight-semibold">← 返回评测与教程列表</a>
+          </p>
         </div>
 
-        <Content />
-      </article>
+        <!-- 右侧粘性侧边栏 (桌面端显示，移动端隐藏) -->
+        <aside class="aw-blog-sidebar">
+          {tocHeadings.length > 0 && (
+            <div class="aw-toc-card">
+              <div class="aw-toc-header">
+                <span aria-hidden="true">📑</span> 本文目录导航
+              </div>
+              <ul class="aw-toc-list">
+                {tocHeadings.map((h) => (
+                  <li class={h.depth === 3 ? 'is-depth-3' : 'is-depth-2'}>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      <p class="mt-6">
-        <a href="/blog">← Back to all posts</a>
-      </p>
+          <div class="box p-4 aw-card">
+            <h4 class="title is-7 text-uppercase mb-2" style="letter-spacing: 0.05em; color: var(--aw-muted);">第一机场评测实验室</h4>
+            <p class="is-size-7 mb-3" style="line-height: 1.5;">
+              基于 Section 38 内容矩阵规范，全网抓包实测，杜绝商业充值与虚假伪专线。
+            </p>
+            <div class="is-size-7" style="color: var(--aw-muted);">
+              <div class="mb-1"><strong>实测时段：</strong>20:30–23:00 晚高峰</div>
+              <div class="mb-1"><strong>检测指标：</strong>丢包率 / 抖动 / 欺诈分</div>
+              <div><strong>数据版本：</strong>2026 年最新修订</div>
+            </div>
+          </div>
+
+          <div class="box p-4 aw-card">
+            <h4 class="title is-7 text-uppercase mb-2" style="letter-spacing: 0.05em; color: var(--aw-muted);">本站认证专线精选</h4>
+            <div class="is-size-7">
+              <div class="mb-3 pb-2" style="border-bottom: 1px solid var(--aw-border);">
+                <a href="/brands/guangsu" class="has-text-weight-bold">光速云 →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">全专线高速集群 · 晚高峰 0 丢包</div>
+              </div>
+              <div class="mb-3 pb-2" style="border-bottom: 1px solid var(--aw-border);">
+                <a href="/brands/firefly" class="has-text-weight-bold">Firefly →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">原生住宅落地 · AI 解锁极佳</div>
+              </div>
+              <div>
+                <a href="/brands/weifeng" class="has-text-weight-bold">微风网络 →</a>
+                <div class="is-size-7" style="color: var(--aw-muted);">高性价比专线 · 适合外贸研发</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   </section>
+
+  <!-- 动态 Mermaid 图表渲染脚本 -->
+  <script is:inline>
+    async function renderMermaidDiagrams() {
+      const mermaidNodes = document.querySelectorAll('pre[data-language="mermaid"]');
+      if (!mermaidNodes.length) return;
+
+      try {
+        const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs');
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: isDark ? 'dark' : 'default',
+          securityLevel: 'loose',
+          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        });
+
+        for (let i = 0; i < mermaidNodes.length; i++) {
+          const pre = mermaidNodes[i];
+          const code = pre.querySelector('code')?.textContent || pre.textContent;
+          const container = document.createElement('div');
+          container.className = 'aw-mermaid-box my-5 p-4';
+          container.style.overflowX = 'auto';
+          container.style.borderRadius = '0.5rem';
+          container.style.border = '1px solid var(--aw-border)';
+          container.style.backgroundColor = 'var(--aw-ink-raised)';
+          container.style.textAlign = 'center';
+
+          const id = `mermaid-chart-${Date.now()}-${i}`;
+          const { svg } = await mermaid.render(id, code);
+          container.innerHTML = svg;
+          pre.parentNode.replaceChild(container, pre);
+        }
+      } catch (e) {
+        console.warn('Mermaid rendering skipped or fallback to code block:', e);
+      }
+    }
+
+    document.addEventListener('astro:page-load', renderMermaidDiagrams);
+    if (document.readyState === 'complete') {
+      renderMermaidDiagrams();
+    }
+  </script>
 </BaseLayout>

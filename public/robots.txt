@@ -1,6 +1,19 @@
-# Allow all crawlers by default.
 User-agent: *
 Allow: /
+Disallow: /go/
 
-# TODO: replace example.com with your real domain when you deploy.
-Sitemap: https://example.com/sitemap-index.xml
+# 显式声明搜索引擎爬虫友好抓取 (Google / Bing / 百度 / 神马)
+User-agent: Googlebot
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: yisouspider
+Allow: /
+
+Sitemap: https://jichangdiyi.cc/sitemap-index.xml
+Sitemap: https://jichangdiyi.cc/sitemap.xml

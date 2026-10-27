@@ -1,155 +1,108 @@
 ---
-import PageHero from '../components/PageHero.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import { site } from '../data/site';
-import { telHref } from '../utils/phone';
+
+const canonical = new URL('/contact', site.url);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: site.url },
+    { '@type': 'ListItem', position: 2, name: '联系我们', item: canonical.toString() },
+  ],
+};
+
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: '联系第一机场实验室与技术复核通道',
+  description: '第一机场官方联络渠道：面向读者提供测速纠错反馈，面向合规专线服务商提供物理链路准入复测与技术参数更新申请。',
+  url: canonical.toString(),
+};
 ---
 
 <BaseLayout
-  title="Contact"
-  description="Get in touch to book a free trial class, ask about membership, or talk to a coach about your goals."
+  title="联系我们与技术复测通道 · 第一机场"
+  description="第一机场实验室官方联络渠道：面向读者提供节点测速纠错与跑路预警反馈，面向服务商提供 IEPL/IPLC 物理专线准入复测与数据更新。"
+  schema={[breadcrumbSchema, contactSchema]}
 >
   <PageHero
-    eyebrow="Contact"
-    title="Start with a conversation."
-    subtitle="Tell us what you are looking for and we will point you to the right class, coach, or membership. No sales script."
+    eyebrow="Contact & Collaboration"
+    title="联系第一机场评测实验室"
+    subtitle="无论是发现数据笔误、提交节点晚高峰断流预警，还是申请将您的优质专线收录至 42 家品牌库，均可通过官方渠道与我们沟通。"
     compact
   />
 
   <section class="section aw-section">
     <div class="container">
-      <div class="columns">
-        <div class="column is-5">
-          <h2 class="title is-4">Find us</h2>
-          <div class="aw-contact-list">
-            <div>
-              <p class="aw-contact-label mb-1">Gym</p>
-              <p>{site.address}</p>
-            </div>
-            <div>
-              <p class="aw-contact-label mb-1">Email</p>
-              <a href={`mailto:${site.email}`}>{site.email}</a>
-            </div>
-            <div>
-              <p class="aw-contact-label mb-1">Phone</p>
-              <a href={telHref(site.phone)}>{site.phone}</a>
-            </div>
-            <div>
-              <p class="aw-contact-label mb-1">Opening hours</p>
-              <p>
-                Mon–Fri · 05:30–23:00<br />
-                Sat · 08:00–20:00<br />
-                Sun · 09:00–18:00
+      <!-- 面包屑导航 -->
+      <nav class="breadcrumb is-small mb-5" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">首页</a></li>
+          <li class="is-active"><span aria-current="page">联系我们</span></li>
+        </ul>
+      </nav>
+
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="box aw-hero-box p-5 mb-5">
+            <h2 class="title is-4 mb-4">官方联络方式与工作时段</h2>
+            <div class="content is-size-6">
+              <p class="mb-3">
+                <strong>官方联络邮箱：</strong>
+                <a class="has-text-primary" href={`mailto:${site.email}`}>{site.email}</a>
+              </p>
+              <p class="mb-3">
+                <strong>物理探针机房：</strong>
+                中国广东珠海电信 / 联通千兆骨干物理双线测试中心
+              </p>
+              <p class="mb-3">
+                <strong>工作响应时段：</strong>
+                周一至周五 09:30–18:30（邮件通常在 1 个工作日内由网络工程师亲自审阅并答复）
               </p>
             </div>
+
+            <hr class="my-5" />
+
+            <h3 class="title is-5 mb-3">读者纠错与跑路预警通道</h3>
+            <div class="content is-size-6 aw-muted-text">
+              <p>
+                如果您在日常使用本站收录的 42 家机场品牌时，发现存在以下情况，欢迎向实验室提交核查请求：
+              </p>
+              <ul>
+                <li><strong>晚高峰持续性断流</strong>：连续 3 天在 20:30–23:00 晚高峰出现大面积节点超时（请附带 MTR 或 Ping 截图）；</li>
+                <li><strong>私自篡改审计与规则</strong>：在未通知的情况下屏蔽合法学术资源，或扣留账户剩余资金；</li>
+                <li><strong>疑似失联与跑路迹象</strong>：官网打不开超过 48 小时且官方 Telegram 禁言或解散。</li>
+              </ul>
+              <p>
+                实验室在收到反馈后将在 24 小时内启动专项复测，核实后将在全网品牌详情页标注警示或直接下架。
+              </p>
+            </div>
+
+            <hr class="my-5" />
+
+            <h3 class="title is-5 mb-3">机场服务商准入与复测提报规范</h3>
+            <div class="content is-size-6 aw-muted-text">
+              <p>
+                第一机场实验室欢迎所有拥有真正物理专线（IEPL / IPLC）或优质内网中转的服务商申请入库测评。提报申请请随信提供：
+              </p>
+              <ol>
+                <li><strong>品牌运营资质</strong>：持续稳定公开运营时间不低于 180 天，具备完善的售后客服工单体系；</li>
+                <li><strong>物理架构说明</strong>：提供入口机房所在城市（如深港微波、沪日海缆）、跨境专线类型及出口落地 IP 类型；</li>
+                <li><strong>测试订阅授权</strong>：提供至少 30 天的技术复测订阅链接（用于接入实验室自动化定时探针）；</li>
+                <li><strong>商业透明度准则</strong>：认同第一机场实验室中立评测原则，承诺不干涉实测数据发布，不提出有偿删帖请求。</li>
+              </ol>
+            </div>
           </div>
 
-          <div class="aw-notice mt-5">
-            Prefer to just drop in? Come ten minutes before any class and ask for
-            the front desk. We will find you a spot if there is one.
+          <div class="has-text-centered">
+            <a href="/brands" class="button is-outlined mr-3">← 浏览 42 家品牌全景数据库</a>
+            <a href="/about" class="button is-primary">了解实验室评测方法论 →</a>
           </div>
-        </div>
-
-        <div class="column is-6 is-offset-1">
-          <h2 class="title is-4">Send a message</h2>
-
-          <form id="contact-form" data-email={site.email}>
-            <div class="field">
-              <label class="label" for="contact-name">Name</label>
-              <div class="control">
-                <input
-                  class="input"
-                  id="contact-name"
-                  name="name"
-                  type="text"
-                  placeholder="Your name"
-                  autocomplete="name"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label" for="contact-email">Email</label>
-              <div class="control">
-                <input
-                  class="input"
-                  id="contact-email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  autocomplete="email"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label" for="contact-interest">I am interested in</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="contact-interest" name="interest">
-                    <option>Group classes</option>
-                    <option>Personal training</option>
-                    <option>Nutrition coaching</option>
-                    <option>Membership &amp; pricing</option>
-                    <option>Not sure yet</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label" for="contact-message">Message</label>
-              <div class="control">
-                <textarea
-                  class="textarea"
-                  id="contact-message"
-                  name="message"
-                  placeholder="A sentence or two is plenty."
-                  rows="5"
-                  required></textarea>
-              </div>
-              <p class="help">We usually reply within one working day.</p>
-            </div>
-
-            <div class="field">
-              <div class="control">
-                <button class="button is-primary" type="submit">Send message</button>
-              </div>
-            </div>
-
-            <p id="contact-form-status" class="aw-form-note" role="status" aria-live="polite"></p>
-          </form>
         </div>
       </div>
     </div>
   </section>
 </BaseLayout>
-
-<script>
-  // The site is fully static, so the form composes an email in the visitor's
-  // mail client instead of pretending to POST to a backend that does not exist.
-  const form = document.querySelector<HTMLFormElement>('#contact-form');
-  const status = document.querySelector<HTMLElement>('#contact-form-status');
-
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const data = new FormData(form);
-    const email = form.dataset.email ?? '';
-    const name = String(data.get('name') ?? '');
-    const from = String(data.get('email') ?? '');
-    const interest = String(data.get('interest') ?? '');
-    const message = String(data.get('message') ?? '');
-
-    const subject = encodeURIComponent(`Website enquiry: ${interest}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name} (${from})`);
-
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-
-    if (status) {
-      status.textContent = 'Opening your email client…';
-    }
-  });
-</script>

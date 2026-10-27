@@ -1,25 +1,15 @@
 {
-  "name": "astro-wellness",
+  "name": "jichangdiyi",
   "type": "module",
-  "version": "0.0.1",
-  "description": "Modern dark/light gym template built with Astro and Bulma. Multi-page site with blog, services, pricing, testimonials, SEO and accessibility baked in.",
+  "version": "1.0.0",
+  "description": "High-performance, SEO-optimized independent website.",
   "license": "MIT",
-  "author": "Domenico Tenace",
-  "keywords": [
-    "astro",
-    "astro-template",
-    "bulma",
-    "gym",
-    "template",
-    "typescript",
-    "ssg"
-  ],
   "engines": {
     "node": ">=22.22.0"
   },
   "scripts": {
     "dev": "astro dev --force",
-    "build": "astro build",
+    "build": "astro build && node scripts/post-build.cjs",
     "check": "astro check",
     "preview": "astro preview",
     "astro": "astro"
@@ -27,6 +17,7 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
+    "@fontsource/inter": "^5.3.0",
     "astro": "^7.4.1",
     "bulma": "^1.0.4"
   },

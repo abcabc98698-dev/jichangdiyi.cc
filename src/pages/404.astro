@@ -4,18 +4,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="Page not found"
-  description="The page you are looking for could not be found. Head back to the gym home page to keep exploring."
+  title="页面未找到 · 404"
+  description="抱歉，您访问的页面不存在或已被移除。请返回第一机场首页继续浏览。"
+  robots="noindex, nofollow"
 >
   <PageHero
     eyebrow="Error 404"
-    title="Page not found."
-    subtitle="The page you are looking for has been moved, renamed, or never existed. Let us get you back on the floor."
+    title="页面未找到"
+    subtitle="您访问的页面可能已变更或不存在。您可以返回第一机场首页或查阅 42 家品牌库。"
     compact
   >
     <div class="buttons is-centered mt-5">
-      <a class="button is-primary is-medium" href="/">Back to home</a>
-      <a class="button is-medium is-outlined" href="/contact">Contact us</a>
+      <a class="button is-primary is-medium" href="/">返回首页</a>
+      <a class="button is-medium is-outlined" href="/brands">前往机场品牌库</a>
     </div>
   </PageHero>
 </BaseLayout>

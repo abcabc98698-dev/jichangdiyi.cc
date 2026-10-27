@@ -4,15 +4,16 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Template placeholder — replace with your real domain before deploying
-  // so the sitemap and canonical URLs point at the live site.
-  site: 'https://example.com',
-  integrations: [sitemap()],
+  site: 'https://jichangdiyi.cc',
+  trailingSlash: 'never',
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/go/'),
+    }),
+  ],
   vite: {
     css: {
       preprocessorOptions: {
-        // Bulma 1.0.4 still uses the legacy Sass if() function; silence the
-        // dependency warning without hiding warnings from our own styles.
         scss: {
           silenceDeprecations: ['if-function'],
         },

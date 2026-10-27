@@ -1,0 +1,35 @@
+---
+import { platformClients } from '../data/clients';
+---
+
+<div class="columns is-multiline">
+  {
+    platformClients.map((plat) => (
+      <div class="column is-4">
+        <div class="box aw-card is-flex is-flex-direction-column" style="height: 100%;">
+          <div class="is-flex is-justify-content-between is-align-items-center mb-2">
+            <h3 class="title is-5 mb-0">{plat.platform}</h3>
+            <span class="tag is-primary is-light has-text-weight-bold">{plat.clients.length} 款推荐</span>
+          </div>
+          <p class="is-size-7 aw-muted-text mb-3">{plat.summary}</p>
+
+          <div class="content is-size-7 mb-4">
+            <ul class="mb-0 pl-3">
+              {plat.clients.slice(0, 3).map((c) => (
+                <li class="mb-1">
+                  <strong>{c.name}</strong>：{c.highlight.slice(0, 24)}...
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="mt-auto pt-2 border-top">
+            <p class="is-size-7 aw-muted-text mb-0">
+              热门词：{plat.searchKeywords.slice(0, 2).join(' · ')}
+            </p>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>

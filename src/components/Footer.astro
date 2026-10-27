@@ -1,6 +1,5 @@
 ---
 import { navItems, site } from '../data/site';
-import { telHref } from '../utils/phone';
 
 const year = new Date().getFullYear();
 ---
@@ -10,11 +9,14 @@ const year = new Date().getFullYear();
     <div class="columns is-multiline">
       <div class="column is-5">
         <p class="title is-5 mb-2">{site.name}</p>
-        <p>{site.tagline}</p>
+        <p class="is-size-6 mb-3">{site.tagline}</p>
+        <p class="is-size-7 aw-muted-text">
+          专注全球 IEPL/IPLC 物理专线、BGP 跨境加速与代理工具性能观测。以真实数据、零虚假公约、科学避坑为宗旨，构建独立的第三方网络基准。
+        </p>
       </div>
 
       <div class="column is-3">
-        <p class="has-text-weight-semibold mb-3">Explore</p>
+        <p class="has-text-weight-semibold mb-3">快捷导航</p>
         <ul>
           {
             navItems.map((item) => (
@@ -23,23 +25,33 @@ const year = new Date().getFullYear();
               </li>
             ))
           }
+          <li class="mb-1">
+            <a href="/brands">42家品牌完整清单</a>
+          </li>
+          <li class="mb-1">
+            <a href="/contact">联系我们与技术复核</a>
+          </li>
         </ul>
       </div>
 
       <div class="column is-4">
-        <p class="has-text-weight-semibold mb-3">Visit</p>
-        <p class="mb-1">{site.address}</p>
-        <p class="mb-1">
-          <a href={`mailto:${site.email}`}>{site.email}</a>
+        <p class="has-text-weight-semibold mb-3">评测实验室与联系</p>
+        <p class="is-size-7 mb-2">测试节点：广东/珠海电信·联通双线千兆环境</p>
+        <p class="is-size-7 mb-2">
+          邮箱：<a href={`mailto:${site.email}`}>{site.email}</a>
         </p>
-        <p>
-          <a href={telHref(site.phone)}>{site.phone}</a>
-        </p>
+        <div class="aw-notice p-3 mt-3 is-size-7">
+          <strong style="color: var(--aw-text);">合规与赞助申明：</strong>
+          本站所列注册链接均附带 <code>rel="nofollow sponsored noopener"</code> 属性。通过推广链接注册可能为本站带来维护佣金，但绝不影响用户实际支付价格与评测中立性。
+        </div>
       </div>
     </div>
 
     <hr />
 
-    <p class="is-size-7">© {year} {site.name}. Built with Astro and Bulma.</p>
+    <div class="is-flex is-justify-content-between is-align-items-center is-flex-wrap-wrap gap-2">
+      <p class="is-size-7 mb-0">© {year} {site.name} ({site.url}). All rights reserved.</p>
+      <p class="is-size-7 aw-muted-text mb-0">独立网络测评与观测实验室 · 杜绝虚假与跑路盘推荐</p>
+    </div>
   </div>
 </footer>

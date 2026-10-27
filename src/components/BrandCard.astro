@@ -1,0 +1,115 @@
+---
+import type { AirportBrand } from '../data/brands';
+
+interface Props {
+  brand: AirportBrand;
+}
+
+const { brand } = Astro.props;
+---
+
+<div class:list={['card aw-card aw-brand-card', { 'is-featured': brand.isFeatured }]}>
+  <div class="card-content aw-card-content is-flex is-flex-direction-column">
+    <!-- 头部：排名、名称与线路标签 -->
+    <div class="is-flex is-justify-content-between is-align-items-start mb-2">
+      <div>
+        <div class="is-flex is-align-items-center gap-2 mb-1">
+          {
+            brand.ranking <= 10 && (
+              <span class="tag is-primary is-light has-text-weight-bold">
+                TOP {brand.ranking}
+              </span>
+            )
+          }
+          <span class="tag is-outlined has-text-weight-semibold">{brand.lineType}</span>
+        </div>
+        <h3 class="title is-4 mb-1">
+          <a href={`/brands/${brand.id}`}>{brand.name}</a>
+        </h3>
+      </div>
+      <div class="has-text-right">
+        <span class="is-size-7 aw-muted-text">门槛起步</span>
+        <p class="title is-4 has-text-primary mb-0">
+          {typeof brand.entryPricePerMonth === 'number' ? `¥${brand.entryPricePerMonth}` : '咨询'}
+          <span class="is-size-7 aw-muted-text">/月</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- 简短标语 -->
+    <p class="is-size-7 aw-muted-text mb-3">{brand.tagline}</p>
+
+    <!-- 协议与客户端支持 -->
+    <div class="tags are-small mb-2">
+      {brand.protocols.map((p) => <span class="tag is-rounded">{p}</span>)}
+      <span class="tag is-rounded is-light">{brand.clientSupport}</span>
+    </div>
+
+    <!-- 核心亮点 -->
+    <ul class="aw-check-list is-size-7 mb-4">
+      {brand.highlights.slice(0, 3).map((h) => <li>{h}</li>)}
+    </ul>
+
+    <!-- 优惠码（如有） -->
+    {
+      brand.couponCode && (
+        <div class="aw-coupon-box p-2 is-size-7 mb-4">
+          优惠码: <strong class="has-text-primary">{brand.couponCode}</strong>{' '}
+          <span class="aw-muted-text">({brand.discountDesc})</span>
+        </div>
+      )
+    }
+
+    <!-- 底部操作按钮 -->
+    <div class="buttons is-flex mt-auto pt-2">
+      <a class="button is-outlined is-small is-flex-grow-1" href={`/brands/${brand.id}`}>
+        测速报告与评测
+      </a>
+      <a
+        class="button is-primary is-small is-flex-grow-1"
+        href={brand.affUrl}
+        target="_blank"
+        rel="nofollow sponsored noopener"
+      >
+        直达官网开通 →
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .aw-brand-card {
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .aw-brand-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  .aw-brand-card.is-featured {
+    border-color: rgba(255, 107, 53, 0.4);
+  }
+  .aw-brand-card .title a {
+    color: var(--aw-text);
+  }
+  .aw-brand-card .title a:hover {
+    color: var(--aw-accent);
+  }
+  .aw-brand-card .button.is-outlined {
+    background-color: var(--aw-ink) !important;
+    border: 1px solid var(--aw-border) !important;
+    color: var(--aw-text) !important;
+    font-weight: 600;
+  }
+  .aw-brand-card .button.is-outlined:hover {
+    background-color: var(--aw-accent-soft) !important;
+    border-color: var(--aw-accent) !important;
+    color: var(--aw-accent) !important;
+  }
+  .aw-brand-card .button.is-primary {
+    background-color: var(--aw-accent) !important;
+    border-color: var(--aw-accent) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,126 @@
+---
+import type { UnlockStatus } from '../data/brands';
+
+interface Props {
+  brandName: string;
+  unlocks: UnlockStatus;
+  testNode?: string;
+}
+
+const {
+  brandName,
+  unlocks,
+  testNode = '香港 / 新加坡 核心原生专线节点',
+} = Astro.props;
+
+interface ServiceItem {
+  key: keyof UnlockStatus;
+  name: string;
+  category: 'AI 生产力' | '全球流媒体';
+}
+
+const services: ServiceItem[] = [
+  { key: 'chatgpt', name: 'ChatGPT', category: 'AI 生产力' },
+  { key: 'claude', name: 'Claude', category: 'AI 生产力' },
+  { key: 'gemini', name: 'Gemini', category: 'AI 生产力' },
+  { key: 'netflix', name: 'Netflix', category: '全球流媒体' },
+  { key: 'disney', name: 'Disney+', category: '全球流媒体' },
+  { key: 'youtube', name: 'YouTube 4K', category: '全球流媒体' },
+  { key: 'tiktok', name: 'TikTok', category: '全球流媒体' },
+  { key: 'spotify', name: 'Spotify', category: '全球流媒体' },
+];
+
+function getBadgeClass(status?: string): string {
+  switch (status) {
+    case '支持':
+      return 'is-success';
+    case '部分支持':
+    case '视节点而定':
+      return 'is-warning';
+    case '不支持':
+      return 'is-danger';
+    default:
+      return 'is-dark';
+  }
+}
+---
+
+<div class="box aw-unlock-box">
+  <div class="is-flex is-justify-content-between is-align-items-center mb-3">
+    <div>
+      <span class="aw-unlock-badge">Service Availability Matrix</span>
+      <h3 class="title is-5 mb-0 mt-1">{brandName} 流媒体与 AI 解锁实测</h3>
+    </div>
+    <span class="is-size-7 aw-unlock-muted">RegionRestrictionCheck</span>
+  </div>
+
+  <p class="is-size-7 aw-unlock-muted mb-3">
+    测试基准节点：<span class="has-text-info has-text-weight-bold">{testNode}</span> · 采用原生住宅/海外机房落地 IP 探测
+  </p>
+
+  <div class="columns is-multiline is-mobile">
+    {
+      services.map((svc) => {
+        const status = unlocks[svc.key] || '待核实';
+        const badgeClass = getBadgeClass(status);
+        return (
+          <div class="column is-3-tablet is-6-mobile">
+            <div class="aw-service-card p-3">
+              <div class="is-flex is-justify-content-between is-align-items-center mb-1">
+                <span class="has-text-weight-bold is-size-6 aw-service-title">{svc.name}</span>
+                <span class={`tag is-small ${badgeClass}`}>{status}</span>
+              </div>
+              <p class="is-size-7 aw-unlock-muted mb-0">{svc.category}</p>
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <div class="aw-unlock-footer mt-2 pt-2 is-flex is-justify-content-between">
+    <span class="is-size-7 aw-unlock-muted">
+      注：流媒体与 AI 风控规则处于动态更新中，部分节点若遇阻可通过客户端切换就近备用专线。
+    </span>
+    <span class="is-size-7 aw-unlock-muted">[jichangdiyi.cc]</span>
+  </div>
+</div>
+
+<style>
+  .aw-unlock-box {
+    background-color: var(--aw-ink-raised);
+    border: 1px solid var(--aw-border);
+    border-radius: 0.75rem;
+    color: var(--aw-text);
+    font-family: system-ui, -apple-system, sans-serif;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  }
+  .aw-unlock-box .title {
+    color: var(--aw-text) !important;
+  }
+  .aw-unlock-muted {
+    color: var(--aw-muted) !important;
+  }
+  .aw-unlock-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(0, 176, 255, 0.12);
+    color: #00b0ff;
+    border: 1px solid rgba(0, 176, 255, 0.3);
+  }
+  .aw-service-card {
+    background: var(--aw-stripes);
+    border: 1px solid var(--aw-border);
+    border-radius: 6px;
+  }
+  .aw-service-title {
+    color: var(--aw-text) !important;
+  }
+  .aw-unlock-footer {
+    border-top: 1px dashed var(--aw-border);
+  }
+</style>

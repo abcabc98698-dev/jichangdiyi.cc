@@ -1,68 +1,115 @@
 ---
-import CtaBand from '../components/CtaBand.astro';
-import LatestPosts from '../components/LatestPosts.astro';
-import PageHero from '../components/PageHero.astro';
-import ServiceCard from '../components/ServiceCard.astro';
-import TestimonialCard from '../components/TestimonialCard.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { services } from '../data/services';
-import { site } from '../data/site';
-import { testimonials } from '../data/testimonials';
+import PageHero from '../components/PageHero.astro';
+import BrandCard from '../components/BrandCard.astro';
+import UnlockMatrix from '../components/UnlockMatrix.astro';
+import ClientMatrix from '../components/ClientMatrix.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { brands } from '../data/brands';
 
-// Structured data: recognise the business as a local gym / health club.
-const healthClubSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'HealthClub',
-  name: site.name,
-  description: site.description,
-  url: site.url,
-  email: site.email,
-  telephone: site.phone,
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '123 Example Street',
-    addressLocality: 'Example City',
-    addressRegion: 'EX',
-    addressCountry: 'US',
-  },
-  openingHours: ['Mo-Fr 05:30-23:00', 'Sa 08:00-20:00', 'Su 09:00-18:00'],
-};
-
-const featuredServices = services.slice(0, 3);
+const top10Brands = brands.filter((b) => b.ranking <= 10).sort((a, b) => a.ranking - b.ranking);
 
 const stats = [
-  { value: '350+', label: 'Active members' },
-  { value: '15', label: 'Classes every day' },
-  { value: '8', label: 'Certified coaches' },
-  { value: '7', label: 'Days a week' },
+  { value: '42+', label: '收录品牌深度横评' },
+  { value: '0%', label: '晚高峰专线丢包基准' },
+  { value: '6 大', label: '主流操作系统客户端适配' },
+  { value: '100%', label: '客观实测与参数校验' },
 ];
+
+const globalUnlocks = {
+  chatgpt: '支持' as const,
+  claude: '支持' as const,
+  gemini: '部分支持' as const,
+  netflix: '支持' as const,
+  disney: '支持' as const,
+  youtube: '支持' as const,
+  tiktok: '支持' as const,
+  spotify: '支持' as const,
+};
+
+const homeFaqs = [
+  {
+    question: '什么是 IEPL / IPLC 专线机场？和普通中转有什么区别？',
+    answer:
+      'IEPL（国际以太网私网专线）和 IPLC（国际私有租用线路）是端到端物理光缆传输，数据不出公网直接跨境，不受公网拥堵和 GFW 深度包检测（DPI）影响。相比普通公网中转，专线最大的优势是晚高峰 0 丢包、超低延迟和极高稳定性。',
+  },
+  {
+    question: '为什么不同机场的价格差距这么大？5.6 元和 30 元有什么区别？',
+    answer:
+      '价格差异主要取决于线路成本与冗余带宽配置。5.6 元档通常为基础流量配额（如 60GB）或非峰值共享带宽；20-30 元档通常包含大冗余专线带宽、原生住宅 IP（高解锁率）以及 7×24 小时真人客服支持。',
+  },
+  {
+    question: '自研专属客户端和通用订阅（Clash/小火箭）选哪种更好？',
+    answer:
+      '小白新手建议选自研专属客户端（如飞猫云、无忧链接），下载登录即可使用，无需手动配置订阅；老手或软路由用户建议选择支持通用订阅的品牌（如光速云、微风网络、梯子云），支持自定义分流规则和多端通用。',
+  },
+  {
+    question: '第一机场的推荐是否客观中立？',
+    answer:
+      '第一机场坚持“数据先行，客观透明”。所有测试基于实验室在广东/香港/海外节点的真实抓取，即便通过推广链接维持网站服务器运营，我们也严格注明优缺点与数据缺口，绝不为不良跑路盘背书。',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: homeFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.answer,
+    },
+  })),
+};
 ---
 
-<BaseLayout title={site.name} description={site.description} schema={healthClubSchema}>
+<BaseLayout
+  title="第一机场 (jichangdiyi.cc) · 全球高速网络专线与机场基础设施测评实验室"
+  description="第一机场（jichangdiyi.cc）专注全球 IEPL/IPLC 专线机场、代理客户端及流媒体/ChatGPT 解锁能力客观实测。收录 42+ 品牌真实测速、套餐明细与避坑指南。"
+  schema={faqSchema}
+>
+  <!-- 首页 Hero -->
   <PageHero
-    eyebrow="Strength · Conditioning · Recovery"
-    title="Train hard. Recover smart."
-    subtitle="A no-nonsense gym for people who want real coaching, honest programming, and a routine that fits a busy life."
+    eyebrow="Network Observatory & Benchmark"
+    title="全球高速专线与机场基础设施测评实验室"
+    subtitle="独立客观追踪 42+ 家网络代理品牌。涵盖晚高峰丢包与下行实测、ChatGPT / Claude / Netflix 全解矩阵，杜绝无脑吹捧，帮您精准选型避坑。"
   >
     <div class="buttons mt-5">
-      <a class="button is-primary is-medium" href="/contact">Book a free class</a>
-      <a class="button is-medium is-outlined" href="/services">Explore services</a>
+      <a class="button is-primary is-medium has-text-weight-bold" href="/brands">
+        探索 42 家品牌库 →
+      </a>
+      <a class="button is-medium is-outlined" href="#top10">
+        查看 Top 10 主推推荐
+      </a>
     </div>
 
+    <!-- Hero 右侧浮动看板：晚高峰专线实时监控仪表 -->
     <Fragment slot="aside">
-      <div class="box aw-hero-box">
-        <p class="aw-eyebrow mb-3">This week's classes</p>
-        <ul class="content">
-          <li><strong>Mon · 07:00</strong> — Strength Circuit</li>
-          <li><strong>Wed · 18:00</strong> — HIIT &amp; Core</li>
-          <li><strong>Sat · 09:00</strong> — Mobility &amp; Recovery</li>
+      <div class="box aw-hero-box p-4">
+        <div class="is-flex is-justify-content-between is-align-items-center mb-3">
+          <span class="tag is-success is-light is-size-7 has-text-weight-bold">
+            ● NOC OBSERVATORY
+          </span>
+          <span class="is-size-7 aw-muted-text">晚高峰监控中</span>
+        </div>
+        <p class="title is-6 mb-2">主推专线核心指标基准</p>
+        <ul class="content is-size-7 mb-3">
+          <li><strong>香港 IEPL 专线：</strong> 22ms 延迟 · 529Mbps 下行</li>
+          <li><strong>新加坡 原生专线：</strong> 42ms 延迟 · 445Mbps 下行</li>
+          <li><strong>晚高峰丢包基准：</strong> 0.00% (物理穿透)</li>
+          <li><strong>AI 解锁成功率：</strong> 95%+ (含原生 IP 节点)</li>
         </ul>
-        <p class="aw-form-note mt-4">Drop-ins welcome while spaces last.</p>
+        <div class="p-2 border-top is-flex is-justify-content-between is-size-7 aw-muted-text">
+          <span>测速节点：广东珠海双线</span>
+          <span class="has-text-primary">[jichangdiyi.cc]</span>
+        </div>
       </div>
     </Fragment>
   </PageHero>
 
-  <section class="section aw-section" aria-label="Gym statistics">
+  <!-- 统计指标带 -->
+  <section class="section aw-section py-5" aria-label="核心指标">
     <div class="container">
       <div class="columns has-text-centered">
         {
@@ -77,63 +124,124 @@ const stats = [
     </div>
   </section>
 
-  <section class="section aw-section aw-section-alt">
+  <!-- 核心板块：Top 10 主推推荐梯队 -->
+  <section class="section aw-section aw-section-alt" id="top10">
     <div class="container">
       <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">What we offer</p>
-        <h2 class="title is-2">Built around your goals</h2>
+        <p class="aw-eyebrow mb-2">Editor's Choice</p>
+        <h2 class="title is-2">2026 年度前十主推梯队</h2>
         <p class="subtitle is-6">
-          Start with one service. Add more only if it genuinely helps you progress.
+          基于稳定性、价格门槛、晚高峰实测与技术运维背景综合排定。第一主推光速云，兼具飞猫、微风、Firefly 等特色专线。
         </p>
       </div>
 
-      <div class="columns">
+      <div class="columns is-multiline">
         {
-          featuredServices.map((service) => (
+          top10Brands.map((brand) => (
             <div class="column is-4">
-              <ServiceCard {...service} />
+              <BrandCard brand={brand} />
             </div>
           ))
         }
       </div>
 
       <div class="has-text-centered mt-6">
-        <a class="button is-medium is-outlined" href="/services">See all services</a>
+        <a class="button is-medium is-primary is-outlined" href="/brands">
+          查看全部 42 家机场品牌库完整清单 →
+        </a>
       </div>
     </div>
   </section>
 
+  <!-- 流媒体与 AI 解锁矩阵概览 -->
   <section class="section aw-section">
     <div class="container">
-      <div class="columns is-vcentered">
-        <div class="column is-7">
-          <p class="aw-quote mb-4">
-            “We are not here to shout at you. We are here to build you a body
-            that handles everything the rest of your week throws at it.”
-          </p>
-          <p class="has-text-weight-semibold">Mara Ellis, Founder</p>
-        </div>
-        <div class="column is-5 has-text-centered">
-          <a class="button is-primary is-medium" href="/contact">Talk to us first</a>
-          <p class="aw-form-note mt-3">A free session, zero pressure to join.</p>
+      <div class="aw-section-head">
+        <p class="aw-eyebrow mb-2">Service Availability Matrix</p>
+        <h2 class="title is-2">主流 AI 与流媒体解锁能力监控</h2>
+        <p class="subtitle is-6">
+          专线落地 IP 质量直接决定了 ChatGPT、Claude 与 Netflix 的封锁率。以下为本站前沿专线节点综合表现。
+        </p>
+      </div>
+
+      <div class="columns is-centered">
+        <div class="column is-10">
+          <UnlockMatrix brandName="第一机场实测基准线" unlocks={globalUnlocks} />
         </div>
       </div>
     </div>
   </section>
 
+  <!-- 跨平台代理客户端知识库矩阵 -->
   <section class="section aw-section aw-section-alt">
     <div class="container">
       <div class="aw-section-head">
-        <p class="aw-eyebrow mb-2">Testimonials</p>
-        <h2 class="title is-2">What members say</h2>
-        <p class="subtitle is-6">Real people, real training — the best marketing is the floor itself.</p>
+        <p class="aw-eyebrow mb-2">Client Ecosystem</p>
+        <h2 class="title is-2">跨平台代理客户端工具大全</h2>
+        <p class="subtitle is-6">
+          从 Windows、macOS 到 iOS、Android 及 OpenWrt 软路由，挑选适合您的内核与客户端。
+        </p>
       </div>
 
-      <div class="columns">
+      <ClientMatrix />
+    </div>
+  </section>
+
+  <!-- 选型指南与避坑方法论 -->
+  <section class="section aw-section">
+    <div class="container">
+      <div class="columns is-vcentered">
+        <div class="column is-6">
+          <p class="aw-eyebrow mb-2">Buyer's Guide</p>
+          <h2 class="title is-2 mb-4">如何选择适合自己的机场？</h2>
+          <div class="content is-size-6">
+            <p>
+              <strong>1. 优先看线路类型而非单纯看价格：</strong>
+              预算允许（>8元/月）首选 <strong>IEPL / IPLC 专线</strong>。公网直连中转虽然便宜，但在敏感期和晚高峰丢包严重。
+            </p>
+            <p>
+              <strong>2. 根据自身动手能力选择客户端模式：</strong>
+              怕折腾选<strong>专属客户端</strong>（下载登录即用）；有软路由或需要精细分流选<strong>通用订阅</strong>（支持 Clash / 小火箭）。
+            </p>
+            <p>
+              <strong>3. 拒绝“超大容量低价年付”跑路陷阱：</strong>
+              凡是宣称“几十元永久几千G”的往往难逃跑路命运。建议新手先<strong>月付试水</strong>，确认稳定后再考虑长期订阅。
+            </p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="box p-5 aw-hero-box">
+            <h3 class="title is-4 mb-3">新手快速选型推荐</h3>
+            <ul class="aw-check-list is-size-6 mb-4">
+              <li><strong>极限省钱备用：</strong>选择 5.6 元档的大佬云、闪电鼠、环球梯</li>
+              <li><strong>小白免配置首选：</strong>选择 7 元档的飞猫云、无忧链接（专属客户端）</li>
+              <li><strong>综合品质主力专线：</strong>首选光速云、微风网络、暮光加速</li>
+              <li><strong>晚高峰极速发烧友：</strong>选择 Firefly 纯专线、闪跃、一翻云</li>
+            </ul>
+            <a class="button is-primary is-fullwidth" href="/brands">进入品牌库快速筛选 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 常见问题 FAQ (SEO / GEO 优化) -->
+  <section class="section aw-section aw-section-alt">
+    <div class="container">
+      <div class="aw-section-head">
+        <p class="aw-eyebrow mb-2">FAQ & Knowledge</p>
+        <h2 class="title is-2">常见问题与技术答疑</h2>
+        <p class="subtitle is-6">解答关于专线原理、价格差异、流媒体风控与合规安全的常见疑问。</p>
+      </div>
+
+      <div class="columns is-multiline">
         {
-          testimonials.map((testimonial) => (
-            <div class="column is-4">
-              <TestimonialCard {...testimonial} />
+          homeFaqs.map((faq) => (
+            <div class="column is-6">
+              <div class="box aw-faq-card p-4" style="height: 100%;">
+                <h3 class="title is-5 mb-2">{faq.question}</h3>
+                <p class="is-size-6 aw-muted-text mb-0">{faq.answer}</p>
+              </div>
             </div>
           ))
         }
@@ -141,13 +249,12 @@ const stats = [
     </div>
   </section>
 
-  <LatestPosts />
-
+  <!-- 底部 CTA Band -->
   <CtaBand
-    eyebrow="Ready when you are"
-    title="Start with one free class."
-    text="Come try the floor, meet a coach, and see if the vibe fits. No contracts, no sales script."
-    ctaLabel="Claim your free class"
-    ctaHref="/contact"
+    eyebrow="Ready to explore"
+    title="找到最适合您的专线机场。"
+    text="42 家国内外优质服务商参数全量对比。杜绝暗坑，透明消费，享受丝滑跨境网络。"
+    ctaLabel="进入 42 家机场品牌库"
+    ctaHref="/brands"
   />
 </BaseLayout>

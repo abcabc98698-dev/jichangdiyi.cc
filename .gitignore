@@ -12,7 +12,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
 # environment variables
 .env
 .env.*
@@ -26,3 +25,6 @@ pnpm-debug.log*
 
 # docs compression backups
 AGENTS.original.md
+
+# temporary audit scripts
+scratch/
